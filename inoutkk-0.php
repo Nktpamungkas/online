@@ -48,6 +48,8 @@ switch ($tanggal2) {
 		$bulan = "Des";
 		break;
 }
+
+$jumlah_kkout_kosong = 0;
 //-
 ?>
 <!DOCTYPE HTML>
@@ -86,7 +88,7 @@ switch ($tanggal2) {
 
 		<div class="area">
 			<div class="area">
-				<table width="110%" border="0">
+				<table width="100%" border="0" id="tablekk">
 					<tr>
 						<td>
 							<?php
@@ -340,47 +342,94 @@ switch ($tanggal2) {
 									$tglDisplay2 = " - ";
 								}
 
-								$operation_query = "SELECT
-									p.PRODUCTIONORDERCODE,
-									p.STEPNUMBER AS STEPNUMBER,
-									TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
-									o.LONGDESCRIPTION,
-									CASE
-										WHEN p.PROGRESSSTATUS = 0 THEN 'Entered'
-										WHEN p.PROGRESSSTATUS = 1 THEN 'Planned'
-										WHEN p.PROGRESSSTATUS = 2 THEN 'Progress'
-										WHEN p.PROGRESSSTATUS = 3 THEN 'Closed'
-									END AS STATUS_OPERATION,
-									iptip.MULAI,
-									iptop.SELESAI,
-									p.PRODUCTIONORDERCODE,
-									p.PRODUCTIONDEMANDCODE
-									FROM 
-										PRODUCTIONDEMANDSTEP p 
-									LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE 
-									LEFT JOIN ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip ON iptip.PRODUCTIONORDERCODE = p.PRODUCTIONORDERCODE AND iptip.DEMANDSTEPSTEPNUMBER = p.STEPNUMBER
-									LEFT JOIN ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop ON iptop.PRODUCTIONORDERCODE = p.PRODUCTIONORDERCODE AND iptop.DEMANDSTEPSTEPNUMBER = p.STEPNUMBER
-									WHERE
-									o.OPERATIONGROUPCODE = '" . $dep0 . "' 
-									AND SUBSTR(iptip.MULAI, 1, 10) BETWEEN '" . $tglDel . "' AND '" . $tglDel2 . "'  
-									ORDER BY p.STEPNUMBER DESC";
+								$operation_query = "SELECT 
+								p.STEPNUMBER,
+								TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
+								p2.DESCRIPTION AS LOT,
+								p.PRODUCTIONORDERCODE,
+								p.PRODUCTIONDEMANDCODE,
+								p2.ORIGDLVSALORDLINESALORDERCODE,
+								p2.SUBCODE05 AS NO_WARNA,
+								i.WARNA,
+								iptip.MULAI,
+								CASE
+									WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
+									ELSE TRIM(o.EXTERNALITEMCODE)
+								END || ' / '|| 
+								TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
+								TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
+								TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
+								TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
+								CASE
+									WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
+									ELSE PRODUCT.LONGDESCRIPTION
+								END || ' ' || 
+								CASE
+									WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
+									ELSE TRIM(s.INTERNALREFERENCE)
+								END AS ITEMDESCRIPTION
+							FROM 
+								ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
+							LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
+							LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+							LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+							LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+								AND i.SUBCODE01 = p2.SUBCODE01
+								AND i.SUBCODE02 = p2.SUBCODE02
+								AND i.SUBCODE03 = p2.SUBCODE03
+								AND i.SUBCODE04 = p2.SUBCODE04
+								AND i.SUBCODE05 = p2.SUBCODE05
+								AND i.SUBCODE06 = p2.SUBCODE06
+								AND i.SUBCODE07 = p2.SUBCODE07
+								AND i.SUBCODE08 = p2.SUBCODE08
+								AND i.SUBCODE09 = p2.SUBCODE09
+								AND i.SUBCODE10 = p2.SUBCODE10
+							LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+							LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+							LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+								AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+								AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+								AND o.SUBCODE01 = p2.SUBCODE01
+								AND o.SUBCODE02 = p2.SUBCODE02
+								AND o.SUBCODE03 = p2.SUBCODE03
+								AND o.SUBCODE04 = p2.SUBCODE04
+								AND o.SUBCODE05 = p2.SUBCODE05
+								AND o.SUBCODE06 = p2.SUBCODE06
+								AND o.SUBCODE07 = p2.SUBCODE07
+								AND o.SUBCODE08 = p2.SUBCODE08
+								AND o.SUBCODE09 = p2.SUBCODE09
+								AND o.SUBCODE10 = p2.SUBCODE10
+							LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+								AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+								AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+								AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+								AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+								AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+								AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+								AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+								AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+								AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+								AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+							WHERE
+								o.OPERATIONGROUPCODE = '$dep0' 
+								AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2' ";
 
 								$operation_stmt = db2_exec($conn_db2, $operation_query);
 
 								if ($operation_stmt) {
-									$operation_query_count = "SELECT
-										COUNT(*) AS jumlah
-										FROM 
-											PRODUCTIONDEMANDSTEP p 
-										LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE 
-										LEFT JOIN ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip ON iptip.PRODUCTIONORDERCODE = p.PRODUCTIONORDERCODE AND iptip.DEMANDSTEPSTEPNUMBER = p.STEPNUMBER
-										LEFT JOIN ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop ON iptop.PRODUCTIONORDERCODE = p.PRODUCTIONORDERCODE AND iptop.DEMANDSTEPSTEPNUMBER = p.STEPNUMBER
-										WHERE
-										o.OPERATIONGROUPCODE = '" . $dep0 . "' 
-										AND SUBSTR(iptip.MULAI, 1, 10) BETWEEN '" . $tglDel . "' AND '" . $tglDel2 . "'";
-
-									$operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
-									$row_count = db2_fetch_assoc($operation_stmt_count);
+									// $operation_query_count = "SELECT
+									// 	COUNT(*) AS jumlah
+									// 	FROM 
+									// 		PRODUCTIONDEMANDSTEP p 
+									// 	LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE 
+									// 	LEFT JOIN ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip ON iptip.PRODUCTIONORDERCODE = p.PRODUCTIONORDERCODE AND iptip.DEMANDSTEPSTEPNUMBER = p.STEPNUMBER
+									// 	LEFT JOIN ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop ON iptop.PRODUCTIONORDERCODE = p.PRODUCTIONORDERCODE AND iptop.DEMANDSTEPSTEPNUMBER = p.STEPNUMBER
+									// 	WHERE
+									// 	o.OPERATIONGROUPCODE = '" . $dep0 . "' 
+									// 	AND SUBSTR(iptip.MULAI, 1, 10) BETWEEN '" . $tglDel . "' AND '" . $tglDel2 . "'";
+							
+									// $operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
+									// $row_count = db2_fetch_assoc($operation_stmt_count);
 									?>
 									<span class='blod9black'>
 										Hasil Pencarian Departemen :
@@ -390,8 +439,7 @@ switch ($tanggal2) {
 									</span>
 									<?= $tglDisplay . " s.d " . $tglDisplay2 ?>
 									<span class='blod9black'>
-										( Total Kartu Kerja Masuk :
-										<?= $row_count["JUMLAH"] ?> )
+										( Total Kartu Kerja Masuk :)
 									</span><br><br>
 
 
@@ -408,28 +456,49 @@ switch ($tanggal2) {
 												<div align='center'>NO.</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>STEPNUMBER</div>
+												<div align='center'>SUB DEPT</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>TANGGAL IN</div>
+												<div align='center'>LANGGANAN</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>TANGGAL OUT</div>
+												<div align='center'>NO BON ORDER</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>OPERATION</div>
+												<div align='center'>NO LOT</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>LONGDESCRIPTION</div>
+												<div align='center'>KK IN</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>STATUS</div>
+												<div align='center'>KK OUT</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>PROD.ORDER</div>
+												<div align='center'>LAMA WAKTU</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>PROD.DEMAND</div>
+												<div align='center'>NO WARNA</div>
+											</td>
+											<td class='tombol'>
+												<div align='center'>WARNA</div>
+											</td>
+											<td class='tombol'>
+												<div align='center'>NETT QTY</div>
+											</td>
+											<td class='tombol'>
+												<div align='center'>BRUTO BAGI KAIN</div>
+											</td>
+											<td class='tombol'>
+												<div align='center'>PRODUCT NUMBER</div>
+											</td>
+											<td class='tombol'>
+												<div align='center'>PRODUCT DESCRIPTION</div>
+											</td>
+											<td class='tombol'>
+												<div align='center'>NO KARTU KERJA</div>
+											</td>
+											<td class='tombol'>
+												<div align='center'>DEPT NOTE</div>
 											</td>
 										</tr>
 										<?php
@@ -445,29 +514,116 @@ switch ($tanggal2) {
 													<?= $no ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row["STEPNUMBER"] ?>
+													<?= $row['OPERATIONCODE'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= date_format(date_create($row["MULAI"]), 'Y/m/d H:i:s') ?>
+
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= date_format(date_create($row["SELESAI"]), 'Y/m/d H:i:s') ?>
+													<?= $row['ORIGDLVSALORDLINESALORDERCODE'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row["OPERATIONCODE"] ?>
+													<?= $row['LOT'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row["LONGDESCRIPTION"] ?>
+													<?= $row['MULAI'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row["STATUS_OPERATION"] ?>
+													<?php
+													$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row[PRODUCTIONORDERCODE]'");
+													$row_kkout = db2_fetch_assoc($kkout_stmt);
+
+													echo $row_kkout['SELESAI'];
+													echo "<br>";
+
+													$progress_status_stmt = db2_exec($conn_db2, "SELECT 
+													p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
+													p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
+													TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
+													FROM 
+														VIEWPRODUCTIONDEMANDSTEP p
+													WHERE
+														p.PRODUCTIONORDERCODE = '$row[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row[STEPNUMBER]'
+													ORDER BY p.GROUPSTEPNUMBER DESC
+													LIMIT 1");
+
+													$row_progress_status = db2_fetch_assoc($progress_status_stmt);
+
+													if ($row_progress_status['PROGRESSSTATUS'] == '3') {
+														$next_progress_stmt = db2_exec($conn_db2, "SELECT 
+														GROUPSTEPNUMBER,
+														TRIM(OPERATIONCODE) AS OPERATIONCODE,
+														o.LONGDESCRIPTION AS LONGDESCRIPTION,
+														PROGRESSSTATUS,
+														CASE
+															WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+															WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+															WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+															WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+														END AS STATUS_OPERATION
+														FROM 
+															VIEWPRODUCTIONDEMANDSTEP v
+														LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
+														WHERE 
+															PRODUCTIONORDERCODE = '$row[PRODUCTIONORDERCODE]' 
+															AND 
+															GROUPSTEPNUMBER > '$row[STEPNUMBER]'
+														ORDER BY 
+															GROUPSTEPNUMBER ASC 
+															LIMIT 1");
+
+														$row_next_progress = db2_fetch_assoc($next_progress_stmt);
+														echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
+													}
+													?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row["PRODUCTIONORDERCODE"] ?>
+													<?php
+													$awal = strtotime(date_format(date_create($row['MULAI']), "Y/m/d H:i:s"));
+													$akhir = strtotime(date_format(date_create($row2['SELESAI']), "Y/m/d H:i:s"));
+													$diff = $akhir - $awal;
+
+													$jam = floor($diff / (60 * 60));
+													$menit_ = $diff - ($jam * (60 * 60));
+													$menit = floor($menit_ / 60);
+													$detik = $diff % 60;
+
+													$waktu = "";
+													if ($jam > 0)
+														$waktu .= $jam . " jam ";
+													if ($menit > 0)
+														$waktu .= $menit . " menit ";
+													if ($detik > 0)
+														$waktu .= $detik . " detik";
+
+													echo $waktu;
+													?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row["PRODUCTIONDEMANDCODE"] ?>
+													<?= $row['NO_WARNA'] ?>
 												</td>
+												<td class="normal333" style="padding: 5px; vertical-align: top;">
+													<?= $row['WARNA'] ?>
+												</td>
+												<td class="normal333" style="padding: 5px; vertical-align: top;">
+
+												</td>
+												<td class="normal333" style="padding: 5px; vertical-align: top;">
+
+												</td>
+												<td class="normal333" style="padding: 5px; vertical-align: top;">
+													<?= $row['PRODUCT_NUMBER'] ?>
+												</td>
+												<td class="normal333" style="padding: 5px; vertical-align: top;">
+													<?= $row['ITEMDESCRIPTION'] ?>
+												</td>
+												<td class="normal333" style="padding: 5px; vertical-align: top;">
+													<?= $row['PRODUCTIONORDERCODE'] ?>
+												</td>
+												<td class="normal333" style="padding: 5px; vertical-align: top;">
+
+												</td>
+
 											</tr>
 											<?php
 											$no++;
@@ -509,6 +665,18 @@ switch ($tanggal2) {
 				© 2013 - PT Indo Taichen Textile Industry </p>
 		</div>
 	</div>
+
+	<script>
+		var table = document.getElementById("tablekk"), sumHasil = 0;
+		// for (var t = 1; t < table.rows.length; t++) {
+		// 	// sumHasil = sumHasil + parseInt(table.rows[t].cells[6].innerHTML);
+		// 	console.log(table.rows[t].cells[6]);
+		// }
+
+		console.log(table.rows);
+		// document.getElementById("hasil").innerHTML = "Sum Value = " + sumHasil;
+
+	</script>
 </body>
 
 </html>
