@@ -418,19 +418,57 @@ $jumlah_kkout_kosong = 0;
 								$operation_stmt = db2_exec($conn_db2, $operation_query);
 
 								if ($operation_stmt) {
-									// $operation_query_count = "SELECT
-									// 	COUNT(*) AS jumlah
-									// 	FROM 
-									// 		PRODUCTIONDEMANDSTEP p 
-									// 	LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE 
-									// 	LEFT JOIN ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip ON iptip.PRODUCTIONORDERCODE = p.PRODUCTIONORDERCODE AND iptip.DEMANDSTEPSTEPNUMBER = p.STEPNUMBER
-									// 	LEFT JOIN ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop ON iptop.PRODUCTIONORDERCODE = p.PRODUCTIONORDERCODE AND iptop.DEMANDSTEPSTEPNUMBER = p.STEPNUMBER
-									// 	WHERE
-									// 	o.OPERATIONGROUPCODE = '" . $dep0 . "' 
-									// 	AND SUBSTR(iptip.MULAI, 1, 10) BETWEEN '" . $tglDel . "' AND '" . $tglDel2 . "'";
-							
-									// $operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
-									// $row_count = db2_fetch_assoc($operation_stmt_count);
+									$operation_query_count = "SELECT 
+										COUNT(*) as JUMLAH
+									FROM 
+										ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
+									LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
+									LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+									LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+									LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+										AND i.SUBCODE01 = p2.SUBCODE01
+										AND i.SUBCODE02 = p2.SUBCODE02
+										AND i.SUBCODE03 = p2.SUBCODE03
+										AND i.SUBCODE04 = p2.SUBCODE04
+										AND i.SUBCODE05 = p2.SUBCODE05
+										AND i.SUBCODE06 = p2.SUBCODE06
+										AND i.SUBCODE07 = p2.SUBCODE07
+										AND i.SUBCODE08 = p2.SUBCODE08
+										AND i.SUBCODE09 = p2.SUBCODE09
+										AND i.SUBCODE10 = p2.SUBCODE10
+									LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+									LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+									LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+										AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+										AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+										AND o.SUBCODE01 = p2.SUBCODE01
+										AND o.SUBCODE02 = p2.SUBCODE02
+										AND o.SUBCODE03 = p2.SUBCODE03
+										AND o.SUBCODE04 = p2.SUBCODE04
+										AND o.SUBCODE05 = p2.SUBCODE05
+										AND o.SUBCODE06 = p2.SUBCODE06
+										AND o.SUBCODE07 = p2.SUBCODE07
+										AND o.SUBCODE08 = p2.SUBCODE08
+										AND o.SUBCODE09 = p2.SUBCODE09
+										AND o.SUBCODE10 = p2.SUBCODE10
+									LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+										AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+										AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+										AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+										AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+										AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+										AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+										AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+										AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+										AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+										AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+									WHERE
+										o.OPERATIONGROUPCODE = '$dep0' 
+										AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2' ";
+									;
+
+									$operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
+									$operation_row_count = db2_fetch_assoc($operation_stmt_count);
 									?>
 									<span class='blod9black'>
 										Hasil Pencarian Departemen :
@@ -440,7 +478,8 @@ $jumlah_kkout_kosong = 0;
 									</span>
 									<?= $tglDisplay . " s.d " . $tglDisplay2 ?>
 									<span class='blod9black'>
-										( Total Kartu Kerja Masuk :)
+										( Total Kartu Kerja Masuk :
+										<?= $operation_row_count['JUMLAH'] ?>)
 									</span><br><br>
 
 
