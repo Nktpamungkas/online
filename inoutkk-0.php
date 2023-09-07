@@ -123,10 +123,11 @@ $jumlah_kkout_kosong = 0;
 													$operation_group_stmt = db2_exec($conn_db2, $operation_group_query);
 
 													if ($operation_group_stmt) {
-														while ($row = db2_fetch_assoc($operation_group_stmt)) {
+														while ($row_option_group = db2_fetch_assoc($operation_group_stmt)) {
 															?>
-															<option value="<?= trim($row['CODE']) ?>" <?= trim($row['CODE']) == $subid ? 'selected' : '' ?>>
-																<?= ucwords(strtolower($row['SHORTDESCRIPTION'])) ?>
+															<option value="<?= trim($row_option_group['CODE']) ?>"
+																<?= trim($row_option_group['CODE']) == $subid ? 'selected' : '' ?>>
+																<?= ucwords(strtolower($row_option_group['SHORTDESCRIPTION'])) ?>
 															</option>
 
 															<?php
@@ -505,7 +506,7 @@ $jumlah_kkout_kosong = 0;
 
 										$no = 1;
 										$c = 0;
-										while ($row = db2_fetch_assoc($operation_stmt)) {
+										while ($row_operation = db2_fetch_assoc($operation_stmt)) {
 											$bgcolor = ($c++ & 1) ? '#33CCFF' : '#FFCC99';
 
 											?>
@@ -514,26 +515,26 @@ $jumlah_kkout_kosong = 0;
 													<?= $no ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['OPERATIONCODE'] ?>
+													<?= $row_operation['OPERATIONCODE'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['ORIGDLVSALORDLINESALORDERCODE'] ?>
+													<?= $row_operation['ORIGDLVSALORDLINESALORDERCODE'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['LOT'] ?>
+													<?= $row_operation['LOT'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['MULAI'] ?>
+													<?= date_format(date_create($row_operation['MULAI']), "Y-m-d H:i:s") ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 													<?php
-													$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row[PRODUCTIONORDERCODE]'");
+													$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
 													$row_kkout = db2_fetch_assoc($kkout_stmt);
 
-													echo $row_kkout['SELESAI'];
+													echo date_format(date_create($row_kkout['SELESAI']), "Y-m-d H:i:s");
 													echo "<br>";
 
 													$progress_status_stmt = db2_exec($conn_db2, "SELECT 
@@ -543,7 +544,7 @@ $jumlah_kkout_kosong = 0;
 													FROM 
 														VIEWPRODUCTIONDEMANDSTEP p
 													WHERE
-														p.PRODUCTIONORDERCODE = '$row[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row[STEPNUMBER]'
+														p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
 													ORDER BY p.GROUPSTEPNUMBER DESC
 													LIMIT 1");
 
@@ -565,9 +566,9 @@ $jumlah_kkout_kosong = 0;
 															VIEWPRODUCTIONDEMANDSTEP v
 														LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
 														WHERE 
-															PRODUCTIONORDERCODE = '$row[PRODUCTIONORDERCODE]' 
+															PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
 															AND 
-															GROUPSTEPNUMBER > '$row[STEPNUMBER]'
+															GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
 														ORDER BY 
 															GROUPSTEPNUMBER ASC 
 															LIMIT 1");
@@ -579,8 +580,8 @@ $jumlah_kkout_kosong = 0;
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 													<?php
-													$awal = strtotime(date_format(date_create($row['MULAI']), "Y/m/d H:i:s"));
-													$akhir = strtotime(date_format(date_create($row2['SELESAI']), "Y/m/d H:i:s"));
+													$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
+													$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
 													$diff = $akhir - $awal;
 
 													$jam = floor($diff / (60 * 60));
@@ -600,25 +601,25 @@ $jumlah_kkout_kosong = 0;
 													?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['NO_WARNA'] ?>
+													<?= $row_operation['NO_WARNA'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['WARNA'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-
+													<?= $row_operation['WARNA'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['PRODUCT_NUMBER'] ?>
+
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['ITEMDESCRIPTION'] ?>
+													<?= $row_operation['PRODUCT_NUMBER'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row['PRODUCTIONORDERCODE'] ?>
+													<?= $row_operation['ITEMDESCRIPTION'] ?>
+												</td>
+												<td class="normal333" style="padding: 5px; vertical-align: top;">
+													<?= $row_operation['PRODUCTIONORDERCODE'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 
