@@ -538,41 +538,74 @@
 													echo date_format(date_create($row_kkout['SELESAI']), "Y-m-d H:i:s");
 													echo "<br>";
 
+													// $progress_status_stmt = db2_exec($conn_db2, "SELECT 
+													// 												p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
+													// 												p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
+													// 												TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
+													// 												FROM 
+													// 													VIEWPRODUCTIONDEMANDSTEP p
+													// 												WHERE
+													// 													p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
+													// 												ORDER BY p.GROUPSTEPNUMBER DESC
+													// 												LIMIT 1");
 													$progress_status_stmt = db2_exec($conn_db2, "SELECT 
 																									p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
-																									p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
+																									p.STEPNUMBER AS GROUPSTEPNUMBER,
 																									TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
-																									FROM 
-																										VIEWPRODUCTIONDEMANDSTEP p
-																									WHERE
-																										p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
-																									ORDER BY p.GROUPSTEPNUMBER DESC
-																									LIMIT 1");
+																								FROM 
+																									PRODUCTIONDEMANDSTEP p
+																								WHERE
+																									p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
+																									AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
+																									AND p.STEPNUMBER = '$row_operation[STEPNUMBER]'
+																								ORDER BY p.STEPNUMBER DESC
+																								LIMIT 1");
 
 													$row_progress_status = db2_fetch_assoc($progress_status_stmt);
 
 													if ($row_progress_status['PROGRESSSTATUS'] == '3') {
+														// $next_progress_stmt = db2_exec($conn_db2, "SELECT 
+														// 											GROUPSTEPNUMBER,
+														// 											TRIM(OPERATIONCODE) AS OPERATIONCODE,
+														// 											o.LONGDESCRIPTION AS LONGDESCRIPTION,
+														// 											PROGRESSSTATUS,
+														// 											CASE
+														// 												WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+														// 												WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+														// 												WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+														// 												WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+														// 											END AS STATUS_OPERATION
+														// 											FROM 
+														// 												VIEWPRODUCTIONDEMANDSTEP v
+														// 											LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
+														// 											WHERE 
+														// 												PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
+														// 												AND 
+														// 												GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
+														// 											ORDER BY 
+														// 												GROUPSTEPNUMBER ASC 
+														// 												LIMIT 1");
 														$next_progress_stmt = db2_exec($conn_db2, "SELECT 
-														GROUPSTEPNUMBER,
-														TRIM(OPERATIONCODE) AS OPERATIONCODE,
-														o.LONGDESCRIPTION AS LONGDESCRIPTION,
-														PROGRESSSTATUS,
-														CASE
-															WHEN PROGRESSSTATUS = 0 THEN 'Entered'
-															WHEN PROGRESSSTATUS = 1 THEN 'Planned'
-															WHEN PROGRESSSTATUS = 2 THEN 'Progress'
-															WHEN PROGRESSSTATUS = 3 THEN 'Closed'
-														END AS STATUS_OPERATION
-														FROM 
-															VIEWPRODUCTIONDEMANDSTEP v
-														LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
-														WHERE 
-															PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
-															AND 
-															GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
-														ORDER BY 
-															GROUPSTEPNUMBER ASC 
-															LIMIT 1");
+																										STEPNUMBER,
+																										TRIM(OPERATIONCODE) AS OPERATIONCODE,
+																										o.LONGDESCRIPTION AS LONGDESCRIPTION,
+																										PROGRESSSTATUS,
+																										CASE
+																											WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+																											WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+																											WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+																											WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+																										END AS STATUS_OPERATION
+																									FROM 
+																										PRODUCTIONDEMANDSTEP p
+																									LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+																									WHERE 
+																										p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
+																										AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
+																										AND p.STEPNUMBER > '$row_operation[STEPNUMBER]'
+																									ORDER BY 
+																										STEPNUMBER ASC 
+																									LIMIT 1");
 
 														$row_next_progress = db2_fetch_assoc($next_progress_stmt);
 														echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
