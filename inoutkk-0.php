@@ -1,56 +1,55 @@
 <?php
-	ini_set("error_reporting", 1);
-	set_time_limit(600);
+ini_set("error_reporting", 1);
+set_time_limit(600);
 
-	include "koneksi.php";
-	//--
-	$act = $_POST['act'];
-	$subid = $_GET['subid'];
-	//---tanggal
-	$tanggal1 = date("d");
-	$tanggal2 = date("m");
-	$tanggal3 = date("Y");
-	switch ($tanggal2) {
-		case "01":
-			$bulan = "Jan";
-			break;
-		case "02":
-			$bulan = "Feb";
-			break;
-		case "03":
-			$bulan = "Mar";
-			break;
-		case "04":
-			$bulan = "Apr";
-			break;
-		case "05":
-			$bulan = "Mei";
-			break;
-		case "06":
-			$bulan = "Jun";
-			break;
-		case "07":
-			$bulan = "Jul";
-			break;
-		case "08":
-			$bulan = "Agt";
-			break;
-		case "09":
-			$bulan = "Sep";
-			break;
-		case "10":
-			$bulan = "Okt";
-			break;
-		case "11":
-			$bulan = "Nop";
-			break;
-		case "12":
-			$bulan = "Des";
-			break;
-	}
+include "koneksi.php";
+//--
+$act = $_POST['act'];
+$subid = $_GET['subid'];
+//---tanggal
+$tanggal1 = date("d");
+$tanggal2 = date("m");
+$tanggal3 = date("Y");
+switch ($tanggal2) {
+	case "01":
+		$bulan = "Jan";
+		break;
+	case "02":
+		$bulan = "Feb";
+		break;
+	case "03":
+		$bulan = "Mar";
+		break;
+	case "04":
+		$bulan = "Apr";
+		break;
+	case "05":
+		$bulan = "Mei";
+		break;
+	case "06":
+		$bulan = "Jun";
+		break;
+	case "07":
+		$bulan = "Jul";
+		break;
+	case "08":
+		$bulan = "Agt";
+		break;
+	case "09":
+		$bulan = "Sep";
+		break;
+	case "10":
+		$bulan = "Okt";
+		break;
+	case "11":
+		$bulan = "Nop";
+		break;
+	case "12":
+		$bulan = "Des";
+		break;
+}
 
-	$jumlah_kkout_kosong = 0;
-	//-
+//-
 ?>
 <!DOCTYPE HTML>
 <!-- Website template by freewebsitetemplates.com -->
@@ -88,7 +87,7 @@
 
 		<div class="area">
 			<div class="area">
-				<table width="100%" border="0" id="tablekk">
+				<table width="100%" border="0">
 					<tr>
 						<td>
 							<?php
@@ -104,8 +103,6 @@
 											<td colspan="2" class="boldCD6">LAPORAN SCAN KARTU KERJA MASUK PER DEPARTEMEN
 											</td>
 										</tr>
-
-
 										<tr>
 											<td width="200" class="blod9black">&nbsp;</td>
 											<td class="normal9black">
@@ -432,123 +429,125 @@
 
 									$operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
 									$operation_row_count = db2_fetch_assoc($operation_stmt_count);
-								?>
-								<span class='blod9black'>
-									Hasil Pencarian Departemen :
-									<?= $dep0 ?>
-									<br><br>
-									Tanggal SCAN IN :
-								</span>
-								<?= $tglDisplay . " s.d " . $tglDisplay2 ?>
-								<span class='blod9black'>
-									( Total Kartu Kerja Masuk :
-									<?= $operation_row_count['JUMLAH'] ?>)
-								</span><br><br>
-								<font class='blod9black'>
-									<a target="_blank"
-										href='inoutkk0-xls.php?dep0=<?= $dep0 ?>&d1=<?= $tgldateDel ?>&m1=<?= $tglmonthDel ?>&y1=<?= $tglyearDel ?>&d2=<?= $tgldateDel2 ?>&m2=<?= $tglmonthDel2 ?>&y2=<?= $tglyearDel2 ?>&ceko=<?= $ceko ?: "" ?>'>
-										CETAK KE EXCEL </a>
-								</font>
-								<!-- <font class='blod9black'> -->
-								<br><br>
-								<table width='100%' border='0'>
-									<tr>
-										<td class='tombol'>
-											<div align='center'>NO.</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>SUB DEPT</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>LANGGANAN</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>NO BON ORDER</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>NO LOT</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>KK IN</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>KK OUT</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>LAMA WAKTU</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>NO WARNA</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>WARNA</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>NETT QTY</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>BRUTO BAGI KAIN</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>PRODUCT NUMBER</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>PRODUCT DESCRIPTION</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>NO KARTU KERJA</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>NO DEMAND</div>
-										</td>
-										<td class='tombol'>
-											<div align='center'>DEPT NOTE</div>
-										</td>
-									</tr>
-									<?php
-										$no = 1;
-										$c = 0;
-										while ($row_operation = db2_fetch_assoc($operation_stmt)) {
-											$bgcolor = ($c++ & 1) ? '#33CCFF' : '#FFCC99';
 									?>
-										<tr bgcolor="<?= $bgcolor ?>">
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $no ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['OPERATIONCODE'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['LANGGANAN'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['ORIGDLVSALORDLINESALORDERCODE'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['LOT'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= date_format(date_create($row_operation['MULAI']), "Y-m-d H:i:s") ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?php
-													$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
-													$row_kkout = db2_fetch_assoc($kkout_stmt);
+									<span class='blod9black'>
+										Hasil Pencarian Departemen :
+										<?= $dep0 ?>
+										<br><br>
+										Tanggal SCAN IN :
+									</span>
+									<?= $tglDisplay . " s.d " . $tglDisplay2 ?>
+									<span class='blod9black'>
+										( Total Kartu Kerja Masuk :
+										<?= $operation_row_count['JUMLAH'] ?>)
+									</span><br><br>
+									<font class='blod9black'>
+										<a href="inoutkk0-xls.php?dep0=<?= $dep0 ?>&tglDel=<?= $tglDel ?>&tglDel2=<?= $tglDel2 ?>"
+											target="_blank" rel="noopener noreferrer">Excel</a>
+									</font>
+									<!-- <font class='blod9black'> -->
+									<br><br>
+									<table width='100%' border='0'>
+										<thead>
+											<tr>
+												<td class='tombol'>
+													<div align='center'>NO.</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>SUB DEPT</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>LANGGANAN</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>NO BON ORDER</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>NO LOT</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>KK IN</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>KK OUT</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>LAMA WAKTU</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>NO WARNA</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>WARNA</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>NETT QTY</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>BRUTO BAGI KAIN</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>PRODUCT NUMBER</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>PRODUCT DESCRIPTION</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>NO KARTU KERJA</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>NO DEMAND</div>
+												</td>
+												<td class='tombol'>
+													<div align='center'>DEPT NOTE</div>
+												</td>
+											</tr>
+										</thead>
+										<tbody>
+											<?php
+											$no = 1;
+											$c = 0;
+											while ($row_operation = db2_fetch_assoc($operation_stmt)) {
+												$bgcolor = ($c++ & 1) ? '#33CCFF' : '#FFCC99';
+												?>
+												<tr bgcolor="<?= $bgcolor ?>">
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $no ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['OPERATIONCODE'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['LANGGANAN'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['ORIGDLVSALORDLINESALORDERCODE'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['LOT'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= date_format(date_create($row_operation['MULAI']), "Y-m-d H:i:s") ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?php
+														$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
+														$row_kkout = db2_fetch_assoc($kkout_stmt);
 
-													echo date_format(date_create($row_kkout['SELESAI']), "Y-m-d H:i:s");
-													echo "<br>";
+														echo date_format(date_create($row_kkout['SELESAI']), "Y-m-d H:i:s");
+														echo "<br>";
 
-													// $progress_status_stmt = db2_exec($conn_db2, "SELECT 
-													// 												p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
-													// 												p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
-													// 												TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
-													// 												FROM 
-													// 													VIEWPRODUCTIONDEMANDSTEP p
-													// 												WHERE
-													// 													p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
-													// 												ORDER BY p.GROUPSTEPNUMBER DESC
-													// 												LIMIT 1");
-													$progress_status_stmt = db2_exec($conn_db2, "SELECT 
+														// $progress_status_stmt = db2_exec($conn_db2, "SELECT 
+														// 												p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
+														// 												p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
+														// 												TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
+														// 												FROM 
+														// 													VIEWPRODUCTIONDEMANDSTEP p
+														// 												WHERE
+														// 													p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
+														// 												ORDER BY p.GROUPSTEPNUMBER DESC
+														// 												LIMIT 1");
+														$progress_status_stmt = db2_exec($conn_db2, "SELECT 
 																									p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
 																									p.STEPNUMBER AS GROUPSTEPNUMBER,
 																									TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
@@ -561,31 +560,31 @@
 																								ORDER BY p.STEPNUMBER DESC
 																								LIMIT 1");
 
-													$row_progress_status = db2_fetch_assoc($progress_status_stmt);
+														$row_progress_status = db2_fetch_assoc($progress_status_stmt);
 
-													if ($row_progress_status['PROGRESSSTATUS'] == '3') {
-														// $next_progress_stmt = db2_exec($conn_db2, "SELECT 
-														// 											GROUPSTEPNUMBER,
-														// 											TRIM(OPERATIONCODE) AS OPERATIONCODE,
-														// 											o.LONGDESCRIPTION AS LONGDESCRIPTION,
-														// 											PROGRESSSTATUS,
-														// 											CASE
-														// 												WHEN PROGRESSSTATUS = 0 THEN 'Entered'
-														// 												WHEN PROGRESSSTATUS = 1 THEN 'Planned'
-														// 												WHEN PROGRESSSTATUS = 2 THEN 'Progress'
-														// 												WHEN PROGRESSSTATUS = 3 THEN 'Closed'
-														// 											END AS STATUS_OPERATION
-														// 											FROM 
-														// 												VIEWPRODUCTIONDEMANDSTEP v
-														// 											LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
-														// 											WHERE 
-														// 												PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
-														// 												AND 
-														// 												GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
-														// 											ORDER BY 
-														// 												GROUPSTEPNUMBER ASC 
-														// 												LIMIT 1");
-														$next_progress_stmt = db2_exec($conn_db2, "SELECT 
+														if ($row_progress_status['PROGRESSSTATUS'] == '3') {
+															// $next_progress_stmt = db2_exec($conn_db2, "SELECT 
+															// 											GROUPSTEPNUMBER,
+															// 											TRIM(OPERATIONCODE) AS OPERATIONCODE,
+															// 											o.LONGDESCRIPTION AS LONGDESCRIPTION,
+															// 											PROGRESSSTATUS,
+															// 											CASE
+															// 												WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+															// 												WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+															// 												WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+															// 												WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+															// 											END AS STATUS_OPERATION
+															// 											FROM 
+															// 												VIEWPRODUCTIONDEMANDSTEP v
+															// 											LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
+															// 											WHERE 
+															// 												PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
+															// 												AND 
+															// 												GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
+															// 											ORDER BY 
+															// 												GROUPSTEPNUMBER ASC 
+															// 												LIMIT 1");
+															$next_progress_stmt = db2_exec($conn_db2, "SELECT 
 																										STEPNUMBER,
 																										TRIM(OPERATIONCODE) AS OPERATIONCODE,
 																										o.LONGDESCRIPTION AS LONGDESCRIPTION,
@@ -607,65 +606,68 @@
 																										STEPNUMBER ASC 
 																									LIMIT 1");
 
-														$row_next_progress = db2_fetch_assoc($next_progress_stmt);
-														echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
-													}
-												?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?php
-												$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
-												$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
-												$diff = $akhir - $awal;
+															$row_next_progress = db2_fetch_assoc($next_progress_stmt);
+															echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
+														}
+														?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?php
+														$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
+														$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
+														$diff = $akhir - $awal;
 
-												$jam = floor($diff / (60 * 60));
-												$menit_ = $diff - ($jam * (60 * 60));
-												$menit = floor($menit_ / 60);
-												$detik = $diff % 60;
+														$jam = floor($diff / (60 * 60));
+														$menit_ = $diff - ($jam * (60 * 60));
+														$menit = floor($menit_ / 60);
+														$detik = $diff % 60;
 
-												$waktu = "";
-												if ($jam > 0)
-													$waktu .= $jam . " jam ";
-												if ($menit > 0)
-													$waktu .= $menit . " menit ";
-												if ($detik > 0)
-													$waktu .= $detik . " detik";
+														$waktu = "";
+														if ($jam > 0)
+															$waktu .= $jam . " jam ";
+														if ($menit > 0)
+															$waktu .= $menit . " menit ";
+														if ($detik > 0)
+															$waktu .= $detik . " detik";
 
-												echo $waktu;
-												?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['NO_WARNA'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['WARNA'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
+														echo $waktu;
+														?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['NO_WARNA'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['WARNA'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
 
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
 
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['PRODUCT_NUMBER'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['ITEMDESCRIPTION'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['PRODUCTIONORDERCODE'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
-												<?= $row_operation['PRODUCTIONDEMANDCODE'] ?>
-											</td>
-											<td class="normal333" style="padding: 5px; vertical-align: top;">
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['PRODUCT_NUMBER'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['ITEMDESCRIPTION'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['PRODUCTIONORDERCODE'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
+														<?= $row_operation['PRODUCTIONDEMANDCODE'] ?>
+													</td>
+													<td class="normal333" style="padding: 5px; vertical-align: top;">
 
-											</td>
+													</td>
 
-										</tr>
-									<?php $no++; } ?>
-								</table>
-							<?php } } ?>
+												</tr>
+												<?php $no++;
+											} ?>
+										</tbody>
+									</table>
+								<?php }
+							} ?>
 						</td>
 					</tr>
 					<tr>
@@ -697,18 +699,6 @@
 				© 2013 - PT Indo Taichen Textile Industry </p>
 		</div>
 	</div>
-
-	<script>
-		var table = document.getElementById("tablekk"), sumHasil = 0;
-		// for (var t = 1; t < table.rows.length; t++) {
-		// 	// sumHasil = sumHasil + parseInt(table.rows[t].cells[6].innerHTML);
-		// 	console.log(table.rows[t].cells[6]);
-		// }
-
-		console.log(table.rows);
-		// document.getElementById("hasil").innerHTML = "Sum Value = " + sumHasil;
-
-	</script>
 </body>
 
 </html>
