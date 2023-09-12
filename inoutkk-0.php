@@ -344,128 +344,89 @@ $jumlah_kkout_kosong = 0;
 								}
 
 								$operation_query = "SELECT 
-								p.STEPNUMBER,
-								TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
-								p2.DESCRIPTION AS LOT,
-								p.PRODUCTIONORDERCODE,
-								p.PRODUCTIONDEMANDCODE,
-								p2.ORIGDLVSALORDLINESALORDERCODE,
-								p2.SUBCODE05 AS NO_WARNA,
-								i.WARNA,
-								iptip.MULAI,
-								CASE
-									WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
-									ELSE TRIM(o.EXTERNALITEMCODE)
-								END || ' / '|| 
-								TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
-								TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
-								TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
-								TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
-								CASE
-									WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
-									ELSE PRODUCT.LONGDESCRIPTION
-								END || ' ' || 
-								CASE
-									WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
-									ELSE TRIM(s.INTERNALREFERENCE)
-								END AS ITEMDESCRIPTION
-							FROM 
-								ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
-							LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
-							LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
-							LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
-							LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
-								AND i.SUBCODE01 = p2.SUBCODE01
-								AND i.SUBCODE02 = p2.SUBCODE02
-								AND i.SUBCODE03 = p2.SUBCODE03
-								AND i.SUBCODE04 = p2.SUBCODE04
-								AND i.SUBCODE05 = p2.SUBCODE05
-								AND i.SUBCODE06 = p2.SUBCODE06
-								AND i.SUBCODE07 = p2.SUBCODE07
-								AND i.SUBCODE08 = p2.SUBCODE08
-								AND i.SUBCODE09 = p2.SUBCODE09
-								AND i.SUBCODE10 = p2.SUBCODE10
-							LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
-							LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
-							LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
-								AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
-								AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
-								AND o.SUBCODE01 = p2.SUBCODE01
-								AND o.SUBCODE02 = p2.SUBCODE02
-								AND o.SUBCODE03 = p2.SUBCODE03
-								AND o.SUBCODE04 = p2.SUBCODE04
-								AND o.SUBCODE05 = p2.SUBCODE05
-								AND o.SUBCODE06 = p2.SUBCODE06
-								AND o.SUBCODE07 = p2.SUBCODE07
-								AND o.SUBCODE08 = p2.SUBCODE08
-								AND o.SUBCODE09 = p2.SUBCODE09
-								AND o.SUBCODE10 = p2.SUBCODE10
-							LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
-								AND PRODUCT.SUBCODE01 = p2.SUBCODE01
-								AND PRODUCT.SUBCODE02 = p2.SUBCODE02
-								AND PRODUCT.SUBCODE03 = p2.SUBCODE03
-								AND PRODUCT.SUBCODE04 = p2.SUBCODE04
-								AND PRODUCT.SUBCODE05 = p2.SUBCODE05
-								AND PRODUCT.SUBCODE06 = p2.SUBCODE06
-								AND PRODUCT.SUBCODE07 = p2.SUBCODE07
-								AND PRODUCT.SUBCODE08 = p2.SUBCODE08
-								AND PRODUCT.SUBCODE09 = p2.SUBCODE09
-								AND PRODUCT.SUBCODE10 = p2.SUBCODE10
-							WHERE
-								o.OPERATIONGROUPCODE = '$dep0' 
-								AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2' ";
+														p.STEPNUMBER,
+														TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
+														p2.DESCRIPTION AS LOT,
+														p.PRODUCTIONORDERCODE,
+														p.PRODUCTIONDEMANDCODE,
+														p2.ORIGDLVSALORDLINESALORDERCODE,
+														p2.SUBCODE05 AS NO_WARNA,
+														i.WARNA,
+														iptip.MULAI,
+														CASE
+															WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
+															ELSE TRIM(o.EXTERNALITEMCODE)
+														END || ' / '|| 
+														TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
+														TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
+														TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
+														TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
+														CASE
+															WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
+															ELSE PRODUCT.LONGDESCRIPTION
+														END || ' ' || 
+														CASE
+															WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
+															ELSE TRIM(s.INTERNALREFERENCE)
+														END AS ITEMDESCRIPTION
+													FROM 
+														ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
+													LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
+													LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+													LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+													LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+														AND i.SUBCODE01 = p2.SUBCODE01
+														AND i.SUBCODE02 = p2.SUBCODE02
+														AND i.SUBCODE03 = p2.SUBCODE03
+														AND i.SUBCODE04 = p2.SUBCODE04
+														AND i.SUBCODE05 = p2.SUBCODE05
+														AND i.SUBCODE06 = p2.SUBCODE06
+														AND i.SUBCODE07 = p2.SUBCODE07
+														AND i.SUBCODE08 = p2.SUBCODE08
+														AND i.SUBCODE09 = p2.SUBCODE09
+														AND i.SUBCODE10 = p2.SUBCODE10
+													LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+													LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+													LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+														AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+														AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+														AND o.SUBCODE01 = p2.SUBCODE01
+														AND o.SUBCODE02 = p2.SUBCODE02
+														AND o.SUBCODE03 = p2.SUBCODE03
+														AND o.SUBCODE04 = p2.SUBCODE04
+														AND o.SUBCODE05 = p2.SUBCODE05
+														AND o.SUBCODE06 = p2.SUBCODE06
+														AND o.SUBCODE07 = p2.SUBCODE07
+														AND o.SUBCODE08 = p2.SUBCODE08
+														AND o.SUBCODE09 = p2.SUBCODE09
+														AND o.SUBCODE10 = p2.SUBCODE10
+													LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+														AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+														AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+														AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+														AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+														AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+														AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+														AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+														AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+														AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+														AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+													WHERE
+														o.OPERATIONGROUPCODE = '$dep0' 
+														AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2' ";
 
 								$operation_stmt = db2_exec($conn_db2, $operation_query);
 
 								if ($operation_stmt) {
 									$operation_query_count = "SELECT 
-										COUNT(*) as JUMLAH
-									FROM 
-										ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
-									LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
-									LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
-									LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
-									LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
-										AND i.SUBCODE01 = p2.SUBCODE01
-										AND i.SUBCODE02 = p2.SUBCODE02
-										AND i.SUBCODE03 = p2.SUBCODE03
-										AND i.SUBCODE04 = p2.SUBCODE04
-										AND i.SUBCODE05 = p2.SUBCODE05
-										AND i.SUBCODE06 = p2.SUBCODE06
-										AND i.SUBCODE07 = p2.SUBCODE07
-										AND i.SUBCODE08 = p2.SUBCODE08
-										AND i.SUBCODE09 = p2.SUBCODE09
-										AND i.SUBCODE10 = p2.SUBCODE10
-									LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
-									LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
-									LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
-										AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
-										AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
-										AND o.SUBCODE01 = p2.SUBCODE01
-										AND o.SUBCODE02 = p2.SUBCODE02
-										AND o.SUBCODE03 = p2.SUBCODE03
-										AND o.SUBCODE04 = p2.SUBCODE04
-										AND o.SUBCODE05 = p2.SUBCODE05
-										AND o.SUBCODE06 = p2.SUBCODE06
-										AND o.SUBCODE07 = p2.SUBCODE07
-										AND o.SUBCODE08 = p2.SUBCODE08
-										AND o.SUBCODE09 = p2.SUBCODE09
-										AND o.SUBCODE10 = p2.SUBCODE10
-									LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
-										AND PRODUCT.SUBCODE01 = p2.SUBCODE01
-										AND PRODUCT.SUBCODE02 = p2.SUBCODE02
-										AND PRODUCT.SUBCODE03 = p2.SUBCODE03
-										AND PRODUCT.SUBCODE04 = p2.SUBCODE04
-										AND PRODUCT.SUBCODE05 = p2.SUBCODE05
-										AND PRODUCT.SUBCODE06 = p2.SUBCODE06
-										AND PRODUCT.SUBCODE07 = p2.SUBCODE07
-										AND PRODUCT.SUBCODE08 = p2.SUBCODE08
-										AND PRODUCT.SUBCODE09 = p2.SUBCODE09
-										AND PRODUCT.SUBCODE10 = p2.SUBCODE10
-									WHERE
-										o.OPERATIONGROUPCODE = '$dep0' 
-										AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2' ";
-									;
+																COUNT(*) as JUMLAH
+															FROM 
+																ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
+															LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
+															LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+															WHERE
+																o.OPERATIONGROUPCODE = '$dep0' 
+																AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2' ";
 
 									$operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
 									$operation_row_count = db2_fetch_assoc($operation_stmt_count);
@@ -542,34 +503,32 @@ $jumlah_kkout_kosong = 0;
 											</td>
 										</tr>
 										<?php
+											$no = 1;
+											$c = 0;
+											while ($row_operation = db2_fetch_assoc($operation_stmt)) {
+												$bgcolor = ($c++ & 1) ? '#33CCFF' : '#FFCC99';
+										?>
+										<tr bgcolor="<?= $bgcolor ?>">
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $no ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['OPERATIONCODE'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
 
-										$no = 1;
-										$c = 0;
-										while ($row_operation = db2_fetch_assoc($operation_stmt)) {
-											$bgcolor = ($c++ & 1) ? '#33CCFF' : '#FFCC99';
-
-											?>
-											<tr bgcolor="<?= $bgcolor ?>">
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $no ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row_operation['OPERATIONCODE'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row_operation['ORIGDLVSALORDLINESALORDERCODE'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row_operation['LOT'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= date_format(date_create($row_operation['MULAI']), "Y-m-d H:i:s") ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?php
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['ORIGDLVSALORDLINESALORDERCODE'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['LOT'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= date_format(date_create($row_operation['MULAI']), "Y-m-d H:i:s") ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?php
 													$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
 													$row_kkout = db2_fetch_assoc($kkout_stmt);
 
@@ -577,48 +536,48 @@ $jumlah_kkout_kosong = 0;
 													echo "<br>";
 
 													$progress_status_stmt = db2_exec($conn_db2, "SELECT 
-													p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
-													p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
-													TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
-													FROM 
-														VIEWPRODUCTIONDEMANDSTEP p
-													WHERE
-														p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
-													ORDER BY p.GROUPSTEPNUMBER DESC
-													LIMIT 1");
+																									p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
+																									p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
+																									TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
+																								FROM 
+																									VIEWPRODUCTIONDEMANDSTEP p
+																								WHERE
+																									p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
+																								ORDER BY p.GROUPSTEPNUMBER DESC
+																								LIMIT 1");
 
 													$row_progress_status = db2_fetch_assoc($progress_status_stmt);
 
 													if ($row_progress_status['PROGRESSSTATUS'] == '3') {
 														$next_progress_stmt = db2_exec($conn_db2, "SELECT 
-														GROUPSTEPNUMBER,
-														TRIM(OPERATIONCODE) AS OPERATIONCODE,
-														o.LONGDESCRIPTION AS LONGDESCRIPTION,
-														PROGRESSSTATUS,
-														CASE
-															WHEN PROGRESSSTATUS = 0 THEN 'Entered'
-															WHEN PROGRESSSTATUS = 1 THEN 'Planned'
-															WHEN PROGRESSSTATUS = 2 THEN 'Progress'
-															WHEN PROGRESSSTATUS = 3 THEN 'Closed'
-														END AS STATUS_OPERATION
-														FROM 
-															VIEWPRODUCTIONDEMANDSTEP v
-														LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
-														WHERE 
-															PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
-															AND 
-															GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
-														ORDER BY 
-															GROUPSTEPNUMBER ASC 
-															LIMIT 1");
+																										GROUPSTEPNUMBER,
+																										TRIM(OPERATIONCODE) AS OPERATIONCODE,
+																										o.LONGDESCRIPTION AS LONGDESCRIPTION,
+																										PROGRESSSTATUS,
+																										CASE
+																											WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+																											WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+																											WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+																											WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+																										END AS STATUS_OPERATION
+																									FROM 
+																										VIEWPRODUCTIONDEMANDSTEP v
+																									LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
+																									WHERE 
+																										PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
+																										AND 
+																										GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
+																									ORDER BY 
+																										GROUPSTEPNUMBER ASC 
+																										LIMIT 1");
 
 														$row_next_progress = db2_fetch_assoc($next_progress_stmt);
 														echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
 													}
-													?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?php
+												?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?php
 													$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
 													$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
 													$diff = $akhir - $awal;
@@ -637,38 +596,35 @@ $jumlah_kkout_kosong = 0;
 														$waktu .= $detik . " detik";
 
 													echo $waktu;
-													?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row_operation['NO_WARNA'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row_operation['WARNA'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
+												?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['NO_WARNA'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['WARNA'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
 
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
 
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row_operation['PRODUCT_NUMBER'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row_operation['ITEMDESCRIPTION'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= $row_operation['PRODUCTIONORDERCODE'] ?>
-												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['PRODUCT_NUMBER'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['ITEMDESCRIPTION'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['PRODUCTIONORDERCODE'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
 
-												</td>
+											</td>
 
-											</tr>
-											<?php
-											$no++;
-										}
-										?>
+										</tr>
+										<?php $no++; } ?>
 									</table>
 									<?php
 								}
