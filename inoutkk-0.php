@@ -1,56 +1,56 @@
 <?php
-ini_set("error_reporting", 1);
-set_time_limit(600);
+	ini_set("error_reporting", 1);
+	set_time_limit(600);
 
-include "koneksi.php";
-//--
-$act = $_POST['act'];
-$subid = $_GET['subid'];
-//---tanggal
-$tanggal1 = date("d");
-$tanggal2 = date("m");
-$tanggal3 = date("Y");
-switch ($tanggal2) {
-	case "01":
-		$bulan = "Jan";
-		break;
-	case "02":
-		$bulan = "Feb";
-		break;
-	case "03":
-		$bulan = "Mar";
-		break;
-	case "04":
-		$bulan = "Apr";
-		break;
-	case "05":
-		$bulan = "Mei";
-		break;
-	case "06":
-		$bulan = "Jun";
-		break;
-	case "07":
-		$bulan = "Jul";
-		break;
-	case "08":
-		$bulan = "Agt";
-		break;
-	case "09":
-		$bulan = "Sep";
-		break;
-	case "10":
-		$bulan = "Okt";
-		break;
-	case "11":
-		$bulan = "Nop";
-		break;
-	case "12":
-		$bulan = "Des";
-		break;
-}
+	include "koneksi.php";
+	//--
+	$act = $_POST['act'];
+	$subid = $_GET['subid'];
+	//---tanggal
+	$tanggal1 = date("d");
+	$tanggal2 = date("m");
+	$tanggal3 = date("Y");
+	switch ($tanggal2) {
+		case "01":
+			$bulan = "Jan";
+			break;
+		case "02":
+			$bulan = "Feb";
+			break;
+		case "03":
+			$bulan = "Mar";
+			break;
+		case "04":
+			$bulan = "Apr";
+			break;
+		case "05":
+			$bulan = "Mei";
+			break;
+		case "06":
+			$bulan = "Jun";
+			break;
+		case "07":
+			$bulan = "Jul";
+			break;
+		case "08":
+			$bulan = "Agt";
+			break;
+		case "09":
+			$bulan = "Sep";
+			break;
+		case "10":
+			$bulan = "Okt";
+			break;
+		case "11":
+			$bulan = "Nop";
+			break;
+		case "12":
+			$bulan = "Des";
+			break;
+	}
 
-$jumlah_kkout_kosong = 0;
-//-
+	$jumlah_kkout_kosong = 0;
+	//-
 ?>
 <!DOCTYPE HTML>
 <!-- Website template by freewebsitetemplates.com -->
@@ -318,7 +318,6 @@ $jumlah_kkout_kosong = 0;
 							<td class="normal9black">
 								<?php
 							} else {
-
 								$dep0 = trim($_POST['dep0']);
 
 								$tgldateDel = $_POST['tgldateDel'];
@@ -345,6 +344,7 @@ $jumlah_kkout_kosong = 0;
 
 								$operation_query = "SELECT 
 														p.STEPNUMBER,
+														ip.LANGGANAN,
 														TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
 														p2.DESCRIPTION AS LOT,
 														p.PRODUCTIONORDERCODE,
@@ -411,6 +411,8 @@ $jumlah_kkout_kosong = 0;
 														AND PRODUCT.SUBCODE08 = p2.SUBCODE08
 														AND PRODUCT.SUBCODE09 = p2.SUBCODE09
 														AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+													LEFT JOIN ITXVIEW_PELANGGAN ip ON ip.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE 
+														AND ip.CODE = s.CODE 
 													WHERE
 														o.OPERATIONGROUPCODE = '$dep0' 
 														AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2' ";
@@ -430,84 +432,85 @@ $jumlah_kkout_kosong = 0;
 
 									$operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
 									$operation_row_count = db2_fetch_assoc($operation_stmt_count);
-									?>
-									<span class='blod9black'>
-										Hasil Pencarian Departemen :
-										<?= $dep0 ?>
-										<br><br>
-										Tanggal SCAN IN :
-									</span>
-									<?= $tglDisplay . " s.d " . $tglDisplay2 ?>
-									<span class='blod9black'>
-										( Total Kartu Kerja Masuk :
-										<?= $operation_row_count['JUMLAH'] ?>)
-									</span><br><br>
-
-
-									<font class='blod9black'>
-										<a target="_blank"
-											href='inoutkk0-xls.php?dep0=<?= $dep0 ?>&d1=<?= $tgldateDel ?>&m1=<?= $tglmonthDel ?>&y1=<?= $tglyearDel ?>&d2=<?= $tgldateDel2 ?>&m2=<?= $tglmonthDel2 ?>&y2=<?= $tglyearDel2 ?>&ceko=<?= $ceko ?: "" ?>'>
-											CETAK KE EXCEL </a>
-									</font>
-									<!-- <font class='blod9black'> -->
+								?>
+								<span class='blod9black'>
+									Hasil Pencarian Departemen :
+									<?= $dep0 ?>
 									<br><br>
-									<table width='100%' border='0'>
-										<tr>
-											<td class='tombol'>
-												<div align='center'>NO.</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>SUB DEPT</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>LANGGANAN</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>NO BON ORDER</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>NO LOT</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>KK IN</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>KK OUT</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>LAMA WAKTU</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>NO WARNA</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>WARNA</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>NETT QTY</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>BRUTO BAGI KAIN</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>PRODUCT NUMBER</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>PRODUCT DESCRIPTION</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>NO KARTU KERJA</div>
-											</td>
-											<td class='tombol'>
-												<div align='center'>DEPT NOTE</div>
-											</td>
-										</tr>
-										<?php
-											$no = 1;
-											$c = 0;
-											while ($row_operation = db2_fetch_assoc($operation_stmt)) {
-												$bgcolor = ($c++ & 1) ? '#33CCFF' : '#FFCC99';
-										?>
+									Tanggal SCAN IN :
+								</span>
+								<?= $tglDisplay . " s.d " . $tglDisplay2 ?>
+								<span class='blod9black'>
+									( Total Kartu Kerja Masuk :
+									<?= $operation_row_count['JUMLAH'] ?>)
+								</span><br><br>
+								<font class='blod9black'>
+									<a target="_blank"
+										href='inoutkk0-xls.php?dep0=<?= $dep0 ?>&d1=<?= $tgldateDel ?>&m1=<?= $tglmonthDel ?>&y1=<?= $tglyearDel ?>&d2=<?= $tgldateDel2 ?>&m2=<?= $tglmonthDel2 ?>&y2=<?= $tglyearDel2 ?>&ceko=<?= $ceko ?: "" ?>'>
+										CETAK KE EXCEL </a>
+								</font>
+								<!-- <font class='blod9black'> -->
+								<br><br>
+								<table width='100%' border='0'>
+									<tr>
+										<td class='tombol'>
+											<div align='center'>NO.</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>SUB DEPT</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>LANGGANAN</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>NO BON ORDER</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>NO LOT</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>KK IN</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>KK OUT</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>LAMA WAKTU</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>NO WARNA</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>WARNA</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>NETT QTY</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>BRUTO BAGI KAIN</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>PRODUCT NUMBER</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>PRODUCT DESCRIPTION</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>NO KARTU KERJA</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>NO DEMAND</div>
+										</td>
+										<td class='tombol'>
+											<div align='center'>DEPT NOTE</div>
+										</td>
+									</tr>
+									<?php
+										$no = 1;
+										$c = 0;
+										while ($row_operation = db2_fetch_assoc($operation_stmt)) {
+											$bgcolor = ($c++ & 1) ? '#33CCFF' : '#FFCC99';
+									?>
 										<tr bgcolor="<?= $bgcolor ?>">
 											<td class="normal333" style="padding: 5px; vertical-align: top;">
 												<?= $no ?>
@@ -516,7 +519,7 @@ $jumlah_kkout_kosong = 0;
 												<?= $row_operation['OPERATIONCODE'] ?>
 											</td>
 											<td class="normal333" style="padding: 5px; vertical-align: top;">
-
+												<?= $row_operation['LANGGANAN'] ?>
 											</td>
 											<td class="normal333" style="padding: 5px; vertical-align: top;">
 												<?= $row_operation['ORIGDLVSALORDLINESALORDERCODE'] ?>
@@ -539,37 +542,37 @@ $jumlah_kkout_kosong = 0;
 																									p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
 																									p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
 																									TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
-																								FROM 
-																									VIEWPRODUCTIONDEMANDSTEP p
-																								WHERE
-																									p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
-																								ORDER BY p.GROUPSTEPNUMBER DESC
-																								LIMIT 1");
+																									FROM 
+																										VIEWPRODUCTIONDEMANDSTEP p
+																									WHERE
+																										p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
+																									ORDER BY p.GROUPSTEPNUMBER DESC
+																									LIMIT 1");
 
 													$row_progress_status = db2_fetch_assoc($progress_status_stmt);
 
 													if ($row_progress_status['PROGRESSSTATUS'] == '3') {
 														$next_progress_stmt = db2_exec($conn_db2, "SELECT 
-																										GROUPSTEPNUMBER,
-																										TRIM(OPERATIONCODE) AS OPERATIONCODE,
-																										o.LONGDESCRIPTION AS LONGDESCRIPTION,
-																										PROGRESSSTATUS,
-																										CASE
-																											WHEN PROGRESSSTATUS = 0 THEN 'Entered'
-																											WHEN PROGRESSSTATUS = 1 THEN 'Planned'
-																											WHEN PROGRESSSTATUS = 2 THEN 'Progress'
-																											WHEN PROGRESSSTATUS = 3 THEN 'Closed'
-																										END AS STATUS_OPERATION
-																									FROM 
-																										VIEWPRODUCTIONDEMANDSTEP v
-																									LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
-																									WHERE 
-																										PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
-																										AND 
-																										GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
-																									ORDER BY 
-																										GROUPSTEPNUMBER ASC 
-																										LIMIT 1");
+														GROUPSTEPNUMBER,
+														TRIM(OPERATIONCODE) AS OPERATIONCODE,
+														o.LONGDESCRIPTION AS LONGDESCRIPTION,
+														PROGRESSSTATUS,
+														CASE
+															WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+															WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+															WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+															WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+														END AS STATUS_OPERATION
+														FROM 
+															VIEWPRODUCTIONDEMANDSTEP v
+														LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
+														WHERE 
+															PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
+															AND 
+															GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
+														ORDER BY 
+															GROUPSTEPNUMBER ASC 
+															LIMIT 1");
 
 														$row_next_progress = db2_fetch_assoc($next_progress_stmt);
 														echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
@@ -578,24 +581,24 @@ $jumlah_kkout_kosong = 0;
 											</td>
 											<td class="normal333" style="padding: 5px; vertical-align: top;">
 												<?php
-													$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
-													$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
-													$diff = $akhir - $awal;
+												$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
+												$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
+												$diff = $akhir - $awal;
 
-													$jam = floor($diff / (60 * 60));
-													$menit_ = $diff - ($jam * (60 * 60));
-													$menit = floor($menit_ / 60);
-													$detik = $diff % 60;
+												$jam = floor($diff / (60 * 60));
+												$menit_ = $diff - ($jam * (60 * 60));
+												$menit = floor($menit_ / 60);
+												$detik = $diff % 60;
 
-													$waktu = "";
-													if ($jam > 0)
-														$waktu .= $jam . " jam ";
-													if ($menit > 0)
-														$waktu .= $menit . " menit ";
-													if ($detik > 0)
-														$waktu .= $detik . " detik";
+												$waktu = "";
+												if ($jam > 0)
+													$waktu .= $jam . " jam ";
+												if ($menit > 0)
+													$waktu .= $menit . " menit ";
+												if ($detik > 0)
+													$waktu .= $detik . " detik";
 
-													echo $waktu;
+												echo $waktu;
 												?>
 											</td>
 											<td class="normal333" style="padding: 5px; vertical-align: top;">
@@ -620,16 +623,16 @@ $jumlah_kkout_kosong = 0;
 												<?= $row_operation['PRODUCTIONORDERCODE'] ?>
 											</td>
 											<td class="normal333" style="padding: 5px; vertical-align: top;">
+												<?= $row_operation['PRODUCTIONDEMANDCODE'] ?>
+											</td>
+											<td class="normal333" style="padding: 5px; vertical-align: top;">
 
 											</td>
 
 										</tr>
-										<?php $no++; } ?>
-									</table>
-									<?php
-								}
-							}
-							?>
+									<?php $no++; } ?>
+								</table>
+							<?php } } ?>
 						</td>
 					</tr>
 					<tr>
