@@ -82,7 +82,6 @@
 		</div>
 	</div>
 	<div id="contents">
-
 		<div class="area">
 			<div class="area">
 				<table width="100%" border="0">
@@ -522,17 +521,27 @@
 								$operation_stmt = db2_exec($conn_db2, $operation_query);
 
 								if ($operation_stmt) {
-									$operation_query_count = "SELECT 
-																COUNT(*) as JUMLAH
-															FROM 
-																ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
-															LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
-															LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
-															WHERE
-																o.OPERATIONGROUPCODE = '$dep0' 
-																AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2' 
-																$where_time";
-
+									if($_POST['jenis_tanggal'] == 'KK IN'){
+										$operation_query_count 	= "SELECT 
+																		COUNT(*) as JUMLAH
+																	FROM 
+																		ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
+																	LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
+																	LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+																	WHERE
+																		o.OPERATIONGROUPCODE = '$dep0' 
+																		$where_datetime";
+									}elseif ($_POST['jenis_tanggal'] == 'KK OUT') {
+										$operation_query_count 	= "SELECT 
+																		COUNT(*) as JUMLAH
+																	FROM 
+																	ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop
+																	LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptop.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptop.DEMANDSTEPSTEPNUMBER
+																	LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+																	WHERE
+																		o.OPERATIONGROUPCODE = '$dep0' 
+																		$where_datetime";
+									}
 									$operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
 									$operation_row_count = db2_fetch_assoc($operation_stmt_count);
 							?>
@@ -540,17 +549,15 @@
 									Hasil Pencarian Departemen :
 									<?= $dep0 ?>
 									<br><br>
-									Tanggal SCAN IN :
+									Tanggal SCAN <?= $_POST['jenis_tanggal']; ?>:
 								</span>
 								<?= $_time1 . ' ' . $tglDisplay . " s.d " . $_time2 . ' ' . $tglDisplay2 ?>
 								<span class='blod9black'>
-									( Total Kartu Kerja Masuk :
-									<?= $operation_row_count['JUMLAH'] ?>)
+									( Total Kartu Kerja : <?= $operation_row_count['JUMLAH'] ?>)
 								</span><br><br>
 								<font class='blod9black'>
 									<a href="inoutkk0-xls.php?dep0=<?= $dep0 ?>&tglDel=<?= $tglDel ?>&tglDel2=<?= $tglDel2 ?>&time1=<?= $_time1 ?>&time2=<?= $_time2 ?>&jns_tgl=<?= $_POST['jenis_tanggal']; ?>" target="_blank" rel="noopener noreferrer">Excel</a>
 								</font>
-								<!-- <font class='blod9black'> -->
 								<br><br>
 								<table width='100%' border='0'>
 									<thead>
@@ -571,7 +578,7 @@
 												<div align='center'>NO LOT</div>
 											</td>
 											<td class='tombol'>
-												<div align='center'>KK IN</div>
+												<div align='center'>KK IN &nbsp;</div>
 											</td>
 											<td class='tombol'>
 												<div align='center'>KK OUT</div>
@@ -631,115 +638,168 @@
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 													<?= $row_operation['LOT'] ?>
 												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?= date_format(date_create($row_operation['MULAI']), "Y-m-d H:i:s") ?>
+												<td class="normal333" style="padding: 5px; vertical-align: top;"> <!-- KK IN -->
+													<?php if($_POST['jenis_tanggal'] == 'KK IN') : ?>
+														<?= date_format(date_create($row_operation['MULAI']), "Y-m-d H:i:s") ?>
+													<?php elseif($_POST['jenis_tanggal'] == 'KK OUT') : ?>
+														<?php
+															$kkin_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_IN_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
+															$row_kkin = db2_fetch_assoc($kkin_stmt);
+	
+															if (!empty($row_kkin['MULAI'])) {
+																echo date_format(date_create($row_kkin['MULAI']), "Y-m-d H:i:s");
+															}	
+														?>
+													<?php endif; ?>
 												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?php
-														$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
-														$row_kkout = db2_fetch_assoc($kkout_stmt);
+												<td class="normal333" style="padding: 5px; vertical-align: top;"><!-- KK OUT -->
+													<?php if($_POST['jenis_tanggal'] == 'KK IN') : ?>
+														<?php
+															$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
+															$row_kkout = db2_fetch_assoc($kkout_stmt);
 
-														if (!empty($row_kkout['SELESAI'])) {
-															echo date_format(date_create($row_kkout['SELESAI']), "Y-m-d H:i:s");
-															echo "<br>";
-														}
+															if (!empty($row_kkout['SELESAI'])) {
+																echo date_format(date_create($row_kkout['SELESAI']), "Y-m-d H:i:s");
+																echo "<br>";
+															}
 
-														// $progress_status_stmt = db2_exec($conn_db2, "SELECT 
-															// 												p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
-															// 												p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
-															// 												TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
-															// 												FROM 
-															// 													VIEWPRODUCTIONDEMANDSTEP p
-															// 												WHERE
-															// 													p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
-															// 												ORDER BY p.GROUPSTEPNUMBER DESC
-															// 												LIMIT 1");
-														$progress_status_stmt = db2_exec($conn_db2, "SELECT 
-																										p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
-																										p.STEPNUMBER AS GROUPSTEPNUMBER,
-																										TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
-																									FROM 
-																										PRODUCTIONDEMANDSTEP p
-																									WHERE
-																										p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
-																										AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
-																										AND p.STEPNUMBER = '$row_operation[STEPNUMBER]'
-																									ORDER BY p.STEPNUMBER DESC
-																									LIMIT 1");
-
-														$row_progress_status = db2_fetch_assoc($progress_status_stmt);
-
-														if ($row_progress_status['PROGRESSSTATUS'] == '3') {
-															// $next_progress_stmt = db2_exec($conn_db2, "SELECT 
-															// 											GROUPSTEPNUMBER,
-															// 											TRIM(OPERATIONCODE) AS OPERATIONCODE,
-															// 											o.LONGDESCRIPTION AS LONGDESCRIPTION,
-															// 											PROGRESSSTATUS,
-															// 											CASE
-															// 												WHEN PROGRESSSTATUS = 0 THEN 'Entered'
-															// 												WHEN PROGRESSSTATUS = 1 THEN 'Planned'
-															// 												WHEN PROGRESSSTATUS = 2 THEN 'Progress'
-															// 												WHEN PROGRESSSTATUS = 3 THEN 'Closed'
-															// 											END AS STATUS_OPERATION
-															// 											FROM 
-															// 												VIEWPRODUCTIONDEMANDSTEP v
-															// 											LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
-															// 											WHERE 
-															// 												PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
-															// 												AND 
-															// 												GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
-															// 											ORDER BY 
-															// 												GROUPSTEPNUMBER ASC 
-															// 												LIMIT 1");
-															$next_progress_stmt = db2_exec($conn_db2, "SELECT 
-																											STEPNUMBER,
-																											TRIM(OPERATIONCODE) AS OPERATIONCODE,
-																											o.LONGDESCRIPTION AS LONGDESCRIPTION,
-																											PROGRESSSTATUS,
-																											CASE
-																												WHEN PROGRESSSTATUS = 0 THEN 'Entered'
-																												WHEN PROGRESSSTATUS = 1 THEN 'Planned'
-																												WHEN PROGRESSSTATUS = 2 THEN 'Progress'
-																												WHEN PROGRESSSTATUS = 3 THEN 'Closed'
-																											END AS STATUS_OPERATION
+															$progress_status_stmt = db2_exec($conn_db2, "SELECT 
+																											p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
+																											p.STEPNUMBER AS GROUPSTEPNUMBER,
+																											TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
 																										FROM 
 																											PRODUCTIONDEMANDSTEP p
-																										LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
-																										WHERE 
+																										WHERE
 																											p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
 																											AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
-																											AND p.STEPNUMBER > '$row_operation[STEPNUMBER]'
-																										ORDER BY 
-																											STEPNUMBER ASC 
+																											AND p.STEPNUMBER = '$row_operation[STEPNUMBER]'
+																										ORDER BY p.STEPNUMBER DESC
 																										LIMIT 1");
 
-															$row_next_progress = db2_fetch_assoc($next_progress_stmt);
-															echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
-														}
-													?>
+															$row_progress_status = db2_fetch_assoc($progress_status_stmt);
+
+															if ($row_progress_status['PROGRESSSTATUS'] == '3') {
+																$next_progress_stmt = db2_exec($conn_db2, "SELECT 
+																												STEPNUMBER,
+																												TRIM(OPERATIONCODE) AS OPERATIONCODE,
+																												o.LONGDESCRIPTION AS LONGDESCRIPTION,
+																												PROGRESSSTATUS,
+																												CASE
+																													WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+																													WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+																													WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+																													WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+																												END AS STATUS_OPERATION
+																											FROM 
+																												PRODUCTIONDEMANDSTEP p
+																											LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+																											WHERE 
+																												p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
+																												AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
+																												AND p.STEPNUMBER > '$row_operation[STEPNUMBER]'
+																											ORDER BY 
+																												STEPNUMBER ASC 
+																											LIMIT 1");
+
+																$row_next_progress = db2_fetch_assoc($next_progress_stmt);
+																echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
+															}
+														?>
+													<?php elseif($_POST['jenis_tanggal'] == 'KK OUT') : ?>
+														<?php
+															echo date_format(date_create($row_operation['SELESAI']), "Y-m-d H:i:s");
+															echo "<br>";
+
+															$progress_status_stmt = db2_exec($conn_db2, "SELECT 
+																											p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
+																											p.STEPNUMBER AS GROUPSTEPNUMBER,
+																											TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
+																										FROM 
+																											PRODUCTIONDEMANDSTEP p
+																										WHERE
+																											p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
+																											AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
+																											AND p.STEPNUMBER = '$row_operation[STEPNUMBER]'
+																										ORDER BY p.STEPNUMBER DESC
+																										LIMIT 1");
+
+															$row_progress_status = db2_fetch_assoc($progress_status_stmt);
+
+															if ($row_progress_status['PROGRESSSTATUS'] == '3') {
+																$next_progress_stmt = db2_exec($conn_db2, "SELECT 
+																												STEPNUMBER,
+																												TRIM(OPERATIONCODE) AS OPERATIONCODE,
+																												o.LONGDESCRIPTION AS LONGDESCRIPTION,
+																												PROGRESSSTATUS,
+																												CASE
+																													WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+																													WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+																													WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+																													WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+																												END AS STATUS_OPERATION
+																											FROM 
+																												PRODUCTIONDEMANDSTEP p
+																											LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+																											WHERE 
+																												p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
+																												AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
+																												AND p.STEPNUMBER > '$row_operation[STEPNUMBER]'
+																											ORDER BY 
+																												STEPNUMBER ASC 
+																											LIMIT 1");
+
+																$row_next_progress = db2_fetch_assoc($next_progress_stmt);
+																echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
+															}
+														?>
+													<?php endif; ?>
 												</td>
-												<td class="normal333" style="padding: 5px; vertical-align: top;">
-													<?php
-														$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
-														$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
-														$diff = $akhir - $awal;
+												<td class="normal333" style="padding: 5px; vertical-align: top;"><!-- LAMA WAKTU -->
+													<?php if($_POST['jenis_tanggal'] == 'KK IN') : ?>
+														<?php
+															$awal 	= strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
+															$akhir	= strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
+															$diff	= $akhir - $awal;
 
-														$jam = floor($diff / (60 * 60));
-														$menit_ = $diff - ($jam * (60 * 60));
-														$menit = floor($menit_ / 60);
-														$detik = $diff % 60;
+															$jam	= floor($diff / (60 * 60));
+															$menit_ = $diff - ($jam * (60 * 60));
+															$menit 	= floor($menit_ / 60);
+															$detik 	= $diff % 60;
 
-														$waktu = "";
-														if ($jam > 0)
-															$waktu .= $jam . " jam ";
-														if ($menit > 0)
-															$waktu .= $menit . " menit ";
-														if ($detik > 0)
-															$waktu .= $detik . " detik";
-														if(!empty($row_kkout['SELESAI'])){
-															echo $waktu;
-														}
-													?>
+															$waktu = "";
+															if ($jam > 0)
+																$waktu .= $jam . " jam ";
+															if ($menit > 0)
+																$waktu .= $menit . " menit ";
+															if ($detik > 0)
+																$waktu .= $detik . " detik";
+															if(!empty($row_kkout['SELESAI'])){
+																echo $waktu;
+															}
+														?>
+													<?php elseif($_POST['jenis_tanggal'] == 'KK OUT') : ?>
+														<?php
+															$awal	= strtotime(date_format(date_create(trim($row_kkin['MULAI'])), "Y/m/d H:i:s"));
+															$akhir	= strtotime(date_format(date_create(trim($row_operation['SELESAI'])), "Y/m/d H:i:s"));
+															$diff	= $akhir - $awal;
+
+															$jam 	= floor($diff / (60 * 60));
+															$menit_ = $diff - ($jam * (60 * 60));
+															$menit 	= floor($menit_ / 60);
+															$detik 	= $diff % 60;
+
+															$waktu 	= "";
+															if ($jam > 0)
+																$waktu .= $jam . " jam ";
+															if ($menit > 0)
+																$waktu .= $menit . " menit ";
+															if ($detik > 0)
+																$waktu .= $detik . " detik";
+															if(!empty($row_kkin['MULAI'])){
+																echo $waktu;
+															}
+														?>
+													<?php endif; ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 													<?= $row_operation['NO_WARNA'] ?>
@@ -748,7 +808,7 @@
 													<?= $row_operation['WARNA'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-
+													...
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 													<?php
@@ -782,15 +842,13 @@
 													<?= $row_operation['PRODUCTIONDEMANDCODE'] ?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
-
+													...
 												</td>
-
 											</tr>
 										<?php $no++; } ?>
 									</tbody>
 								</table>
-						<?php }
-							} ?>
+						<?php } } ?>
 						</td>
 					</tr>
 					<tr>
