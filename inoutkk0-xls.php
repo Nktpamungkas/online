@@ -19,9 +19,9 @@ if($_GET['jns_tgl'] == 'KK IN'){
 		$_time2_2		= substr($time2, 3, 2);
 		$_time2		= $_time2_1 . '.' . $_time2_2;
 
-		$where_time	 = "AND SUBSTR(iptip.MULAI, 12, 5) BETWEEN '$_time1' AND '$_time2'";
+		$where_datetime	 = "AND iptip.MULAI BETWEEN '$tglDel $_time1' AND '$tglDel2 $_time2'";
 	} else {
-		$where_time	 = "";
+		$where_datetime	 = "AND	SUBSTR(iptip.MULAI, 1,10) BETWEEN '$tglDel' AND '$tglDel2'";
 	}
 	$operation_query = "SELECT 
 						p.STEPNUMBER,
@@ -96,8 +96,7 @@ if($_GET['jns_tgl'] == 'KK IN'){
 						AND ip.CODE = s.CODE 
 					WHERE
 						o.OPERATIONGROUPCODE = '$dep0' 
-						AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2'
-						$where_time
+						$where_datetime
 					ORDER BY 
 						iptip.MULAI ASC";
 }elseif ($_GET['jns_tgl'] == 'KK OUT') {
@@ -110,9 +109,9 @@ if($_GET['jns_tgl'] == 'KK IN'){
 		$_time2_2		= substr($time2, 3, 2);
 		$_time2		= $_time2_1 . '.' . $_time2_2;
 
-		$where_time	 = "AND SUBSTR(iptop.SELESAI, 12, 5) BETWEEN '$_time1' AND '$_time2'";
+		$where_datetime	 = "AND iptop.SELESAI BETWEEN '$tglDel $_time1' AND '$tglDel2 $_time2'";
 	} else {
-		$where_time	 = "";
+		$where_datetime	 = "AND	SUBSTR(iptop.SELESAI, 1,10) BETWEEN '$tglDel' AND '$tglDel2'";
 	}
 	$operation_query = "SELECT 
 							p.STEPNUMBER,
@@ -187,8 +186,7 @@ if($_GET['jns_tgl'] == 'KK IN'){
 							AND ip.CODE = s.CODE 
 						WHERE
 							o.OPERATIONGROUPCODE = '$dep0' 
-							AND	iptop.SELESAI BETWEEN '$tglDel' AND '$tglDel2'
-							$where_time
+							$where_datetime
 						ORDER BY
 							iptop.SELESAI ASC";
 }
