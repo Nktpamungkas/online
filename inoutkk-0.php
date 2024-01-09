@@ -128,11 +128,19 @@
 												?>
 											</select>
 										</td>
-
 									</tr>
 									<tr>
 										<td class="blod9black">&nbsp;</td>
 										<td class="normal9black">&nbsp;</td>
+									</tr>
+									<tr>
+										<td class="blod9black">Jenis Tanggal</td>
+										<td class="normal9black">
+											<select name="jenis_tanggal" class="normal9black">
+												<option value="KK IN">KK IN</option>
+												<option value="KK OUT">KK OUT</option>
+											</select>
+										</td>
 									</tr>
 									<tr>
 										<td class="blod9black">&nbsp;</td>
@@ -279,6 +287,14 @@
 									</tr>
 									<tr>
 										<td class="blod9black">&nbsp;</td>
+										<td class="normal9black">&nbsp;</td>
+									</tr>
+									<tr>
+										<td class="blod9black">&nbsp;</td>
+										<td class="normal9black">&nbsp;</td>
+									</tr>
+									<tr>
+										<td class="blod9black">&nbsp;</td>
 										<td class="normal9black">
 											<input name="button" type="submit" class="tombol" id="button" value="CARI DATA" />
 										</td>
@@ -320,21 +336,22 @@
 								}
 								$time1			= $_POST['time1'];
 								$time2			= $_POST['time2'];
-								if ($time1 && $time2) {
-									$_time1_1		= substr($time1, 0, 2);
-									$_time1_2		= substr($time1, 3, 2);
-									$_time1		= $_time1_1 . '.' . $_time1_2;
 
-									$_time2_1		= substr($time2, 0, 2);
-									$_time2_2		= substr($time2, 3, 2);
-									$_time2		= $_time2_1 . '.' . $_time2_2;
-
-									$where_time	 = "AND SUBSTR(iptip.MULAI, 12, 5) BETWEEN '$_time1' AND '$_time2'";
-								} else {
-									$where_time	 = "";
-								}
-
-								$operation_query = "SELECT 
+								if($_POST['jenis_tanggal'] == 'KK IN'){
+									if ($time1 && $time2) {
+										$_time1_1		= substr($time1, 0, 2);
+										$_time1_2		= substr($time1, 3, 2);
+										$_time1		= $_time1_1 . '.' . $_time1_2;
+	
+										$_time2_1		= substr($time2, 0, 2);
+										$_time2_2		= substr($time2, 3, 2);
+										$_time2		= $_time2_1 . '.' . $_time2_2;
+	
+										$where_time	 = "AND SUBSTR(iptip.MULAI, 12, 5) BETWEEN '$_time1' AND '$_time2'";
+									} else {
+										$where_time	 = "";
+									}
+									$operation_query = "SELECT 
 														p.STEPNUMBER,
 														ip.LANGGANAN,
 														TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
@@ -408,7 +425,102 @@
 													WHERE
 														o.OPERATIONGROUPCODE = '$dep0' 
 														AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2'
-														$where_time";
+														$where_time
+													ORDER BY 
+														iptip.MULAI ASC";
+								}elseif ($_POST['jenis_tanggal'] == 'KK OUT') {
+									if ($time1 && $time2) {
+										$_time1_1		= substr($time1, 0, 2);
+										$_time1_2		= substr($time1, 3, 2);
+										$_time1		= $_time1_1 . '.' . $_time1_2;
+	
+										$_time2_1		= substr($time2, 0, 2);
+										$_time2_2		= substr($time2, 3, 2);
+										$_time2		= $_time2_1 . '.' . $_time2_2;
+	
+										$where_time	 = "AND SUBSTR(iptop.SELESAI, 12, 5) BETWEEN '$_time1' AND '$_time2'";
+									} else {
+										$where_time	 = "";
+									}
+									$operation_query = "SELECT 
+															p.STEPNUMBER,
+															ip.LANGGANAN,
+															TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
+															p2.DESCRIPTION AS LOT,
+															p.PRODUCTIONORDERCODE,
+															p.PRODUCTIONDEMANDCODE,
+															p2.ORIGDLVSALORDLINESALORDERCODE,
+															p2.SUBCODE05 AS NO_WARNA,
+															i.WARNA,
+															iptop.SELESAI,
+															CASE
+																WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
+																ELSE TRIM(o.EXTERNALITEMCODE)
+															END || ' / '|| 
+															TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
+															TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
+															TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
+															TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
+															CASE
+																WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
+																ELSE PRODUCT.LONGDESCRIPTION
+															END || ' ' || 
+															CASE
+																WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
+																ELSE TRIM(s.INTERNALREFERENCE)
+															END AS ITEMDESCRIPTION
+														FROM 
+															ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop 
+														LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptop.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptop.DEMANDSTEPSTEPNUMBER
+														LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+														LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+														LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+															AND i.SUBCODE01 = p2.SUBCODE01
+															AND i.SUBCODE02 = p2.SUBCODE02
+															AND i.SUBCODE03 = p2.SUBCODE03
+															AND i.SUBCODE04 = p2.SUBCODE04
+															AND i.SUBCODE05 = p2.SUBCODE05
+															AND i.SUBCODE06 = p2.SUBCODE06
+															AND i.SUBCODE07 = p2.SUBCODE07
+															AND i.SUBCODE08 = p2.SUBCODE08
+															AND i.SUBCODE09 = p2.SUBCODE09
+															AND i.SUBCODE10 = p2.SUBCODE10
+														LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+														LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+														LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+															AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+															AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+															AND o.SUBCODE01 = p2.SUBCODE01
+															AND o.SUBCODE02 = p2.SUBCODE02
+															AND o.SUBCODE03 = p2.SUBCODE03
+															AND o.SUBCODE04 = p2.SUBCODE04
+															AND o.SUBCODE05 = p2.SUBCODE05
+															AND o.SUBCODE06 = p2.SUBCODE06
+															AND o.SUBCODE07 = p2.SUBCODE07
+															AND o.SUBCODE08 = p2.SUBCODE08
+															AND o.SUBCODE09 = p2.SUBCODE09
+															AND o.SUBCODE10 = p2.SUBCODE10
+														LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+															AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+															AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+															AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+															AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+															AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+															AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+															AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+															AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+															AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+															AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+														LEFT JOIN ITXVIEW_PELANGGAN ip ON ip.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE 
+															AND ip.CODE = s.CODE 
+														WHERE
+															o.OPERATIONGROUPCODE = '$dep0' 
+															AND	iptop.SELESAI BETWEEN '$tglDel' AND '$tglDel2'
+															$where_time
+														ORDER BY
+															iptop.SELESAI ASC";
+								}
+								
 
 								$operation_stmt = db2_exec($conn_db2, $operation_query);
 
@@ -439,7 +551,7 @@
 									<?= $operation_row_count['JUMLAH'] ?>)
 								</span><br><br>
 								<font class='blod9black'>
-									<a href="inoutkk0-xls.php?dep0=<?= $dep0 ?>&tglDel=<?= $tglDel ?>&tglDel2=<?= $tglDel2 ?>&time1=<?= $_time1 ?>&time2=<?= $_time2 ?>" target="_blank" rel="noopener noreferrer">Excel</a>
+									<a href="inoutkk0-xls.php?dep0=<?= $dep0 ?>&tglDel=<?= $tglDel ?>&tglDel2=<?= $tglDel2 ?>&time1=<?= $_time1 ?>&time2=<?= $_time2 ?>&jns_tgl=<?= $_POST['jenis_tanggal']; ?>" target="_blank" rel="noopener noreferrer">Excel</a>
 								</font>
 								<!-- <font class='blod9black'> -->
 								<br><br>
@@ -527,109 +639,109 @@
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 													<?php
-													$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
-													$row_kkout = db2_fetch_assoc($kkout_stmt);
+														$kkout_stmt = db2_exec($conn_db2, "SELECT * FROM ITXVIEW_POSISIKK_TGL_OUT_PRODORDER WHERE DEMANDSTEPSTEPNUMBER = '$row_operation[STEPNUMBER]' AND PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]'");
+														$row_kkout = db2_fetch_assoc($kkout_stmt);
 
-													if (!empty($row_kkout['SELESAI'])) {
-														echo date_format(date_create($row_kkout['SELESAI']), "Y-m-d H:i:s");
-														echo "<br>";
-													}
+														if (!empty($row_kkout['SELESAI'])) {
+															echo date_format(date_create($row_kkout['SELESAI']), "Y-m-d H:i:s");
+															echo "<br>";
+														}
 
-
-													// $progress_status_stmt = db2_exec($conn_db2, "SELECT 
-													// 												p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
-													// 												p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
-													// 												TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
-													// 												FROM 
-													// 													VIEWPRODUCTIONDEMANDSTEP p
-													// 												WHERE
-													// 													p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
-													// 												ORDER BY p.GROUPSTEPNUMBER DESC
-													// 												LIMIT 1");
-													$progress_status_stmt = db2_exec($conn_db2, "SELECT 
-																									p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
-																									p.STEPNUMBER AS GROUPSTEPNUMBER,
-																									TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
-																								FROM 
-																									PRODUCTIONDEMANDSTEP p
-																								WHERE
-																									p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
-																									AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
-																									AND p.STEPNUMBER = '$row_operation[STEPNUMBER]'
-																								ORDER BY p.STEPNUMBER DESC
-																								LIMIT 1");
-
-													$row_progress_status = db2_fetch_assoc($progress_status_stmt);
-
-													if ($row_progress_status['PROGRESSSTATUS'] == '3') {
-														// $next_progress_stmt = db2_exec($conn_db2, "SELECT 
-														// 											GROUPSTEPNUMBER,
-														// 											TRIM(OPERATIONCODE) AS OPERATIONCODE,
-														// 											o.LONGDESCRIPTION AS LONGDESCRIPTION,
-														// 											PROGRESSSTATUS,
-														// 											CASE
-														// 												WHEN PROGRESSSTATUS = 0 THEN 'Entered'
-														// 												WHEN PROGRESSSTATUS = 1 THEN 'Planned'
-														// 												WHEN PROGRESSSTATUS = 2 THEN 'Progress'
-														// 												WHEN PROGRESSSTATUS = 3 THEN 'Closed'
-														// 											END AS STATUS_OPERATION
-														// 											FROM 
-														// 												VIEWPRODUCTIONDEMANDSTEP v
-														// 											LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
-														// 											WHERE 
-														// 												PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
-														// 												AND 
-														// 												GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
-														// 											ORDER BY 
-														// 												GROUPSTEPNUMBER ASC 
-														// 												LIMIT 1");
-														$next_progress_stmt = db2_exec($conn_db2, "SELECT 
-																										STEPNUMBER,
-																										TRIM(OPERATIONCODE) AS OPERATIONCODE,
-																										o.LONGDESCRIPTION AS LONGDESCRIPTION,
-																										PROGRESSSTATUS,
-																										CASE
-																											WHEN PROGRESSSTATUS = 0 THEN 'Entered'
-																											WHEN PROGRESSSTATUS = 1 THEN 'Planned'
-																											WHEN PROGRESSSTATUS = 2 THEN 'Progress'
-																											WHEN PROGRESSSTATUS = 3 THEN 'Closed'
-																										END AS STATUS_OPERATION
+														// $progress_status_stmt = db2_exec($conn_db2, "SELECT 
+															// 												p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
+															// 												p.GROUPSTEPNUMBER AS GROUPSTEPNUMBER,
+															// 												TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
+															// 												FROM 
+															// 													VIEWPRODUCTIONDEMANDSTEP p
+															// 												WHERE
+															// 													p.PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' AND p.GROUPSTEPNUMBER = '$row_operation[STEPNUMBER]'
+															// 												ORDER BY p.GROUPSTEPNUMBER DESC
+															// 												LIMIT 1");
+														$progress_status_stmt = db2_exec($conn_db2, "SELECT 
+																										p.PRODUCTIONORDERCODE AS PRODUCTIONORDERCODE, 
+																										p.STEPNUMBER AS GROUPSTEPNUMBER,
+																										TRIM(p.PROGRESSSTATUS) AS PROGRESSSTATUS
 																									FROM 
 																										PRODUCTIONDEMANDSTEP p
-																									LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
-																									WHERE 
+																									WHERE
 																										p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
 																										AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
-																										AND p.STEPNUMBER > '$row_operation[STEPNUMBER]'
-																									ORDER BY 
-																										STEPNUMBER ASC 
+																										AND p.STEPNUMBER = '$row_operation[STEPNUMBER]'
+																									ORDER BY p.STEPNUMBER DESC
 																									LIMIT 1");
 
-														$row_next_progress = db2_fetch_assoc($next_progress_stmt);
-														echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
-													}
+														$row_progress_status = db2_fetch_assoc($progress_status_stmt);
+
+														if ($row_progress_status['PROGRESSSTATUS'] == '3') {
+															// $next_progress_stmt = db2_exec($conn_db2, "SELECT 
+															// 											GROUPSTEPNUMBER,
+															// 											TRIM(OPERATIONCODE) AS OPERATIONCODE,
+															// 											o.LONGDESCRIPTION AS LONGDESCRIPTION,
+															// 											PROGRESSSTATUS,
+															// 											CASE
+															// 												WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+															// 												WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+															// 												WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+															// 												WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+															// 											END AS STATUS_OPERATION
+															// 											FROM 
+															// 												VIEWPRODUCTIONDEMANDSTEP v
+															// 											LEFT JOIN OPERATION o ON o.CODE = v.OPERATIONCODE
+															// 											WHERE 
+															// 												PRODUCTIONORDERCODE = '$row_operation[PRODUCTIONORDERCODE]' 
+															// 												AND 
+															// 												GROUPSTEPNUMBER > '$row_operation[STEPNUMBER]'
+															// 											ORDER BY 
+															// 												GROUPSTEPNUMBER ASC 
+															// 												LIMIT 1");
+															$next_progress_stmt = db2_exec($conn_db2, "SELECT 
+																											STEPNUMBER,
+																											TRIM(OPERATIONCODE) AS OPERATIONCODE,
+																											o.LONGDESCRIPTION AS LONGDESCRIPTION,
+																											PROGRESSSTATUS,
+																											CASE
+																												WHEN PROGRESSSTATUS = 0 THEN 'Entered'
+																												WHEN PROGRESSSTATUS = 1 THEN 'Planned'
+																												WHEN PROGRESSSTATUS = 2 THEN 'Progress'
+																												WHEN PROGRESSSTATUS = 3 THEN 'Closed'
+																											END AS STATUS_OPERATION
+																										FROM 
+																											PRODUCTIONDEMANDSTEP p
+																										LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+																										WHERE 
+																											p.PRODUCTIONORDERCODE  = '$row_operation[PRODUCTIONORDERCODE]' 
+																											AND p.PRODUCTIONDEMANDCODE = '$row_operation[PRODUCTIONDEMANDCODE]' 
+																											AND p.STEPNUMBER > '$row_operation[STEPNUMBER]'
+																										ORDER BY 
+																											STEPNUMBER ASC 
+																										LIMIT 1");
+
+															$row_next_progress = db2_fetch_assoc($next_progress_stmt);
+															echo "<b>" . $row_next_progress['LONGDESCRIPTION'] . "</b>";
+														}
 													?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
 													<?php
-													$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
-													$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
-													$diff = $akhir - $awal;
+														$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
+														$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
+														$diff = $akhir - $awal;
 
-													$jam = floor($diff / (60 * 60));
-													$menit_ = $diff - ($jam * (60 * 60));
-													$menit = floor($menit_ / 60);
-													$detik = $diff % 60;
+														$jam = floor($diff / (60 * 60));
+														$menit_ = $diff - ($jam * (60 * 60));
+														$menit = floor($menit_ / 60);
+														$detik = $diff % 60;
 
-													$waktu = "";
-													if ($jam > 0)
-														$waktu .= $jam . " jam ";
-													if ($menit > 0)
-														$waktu .= $menit . " menit ";
-													if ($detik > 0)
-														$waktu .= $detik . " detik";
-
-													echo $waktu;
+														$waktu = "";
+														if ($jam > 0)
+															$waktu .= $jam . " jam ";
+														if ($menit > 0)
+															$waktu .= $menit . " menit ";
+														if ($detik > 0)
+															$waktu .= $detik . " detik";
+														if(!empty($row_kkout['SELESAI'])){
+															echo $waktu;
+														}
 													?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
@@ -655,7 +767,9 @@
 																									LIMIT 1");
 
 														$q_bruto_bagikain = db2_fetch_assoc($q_bruto_bagikain);
-														echo $q_bruto_bagikain['INITIALUSERPRIMARYQUANTITY'];
+														if(!empty($q_bruto_bagikain['INITIALUSERPRIMARYQUANTITY'])){
+															echo number_format($q_bruto_bagikain['INITIALUSERPRIMARYQUANTITY'], 3);
+														}
 													?>
 												</td>
 												<td class="normal333" style="padding: 5px; vertical-align: top;">
@@ -675,8 +789,7 @@
 												</td>
 
 											</tr>
-										<?php $no++;
-										} ?>
+										<?php $no++; } ?>
 									</tbody>
 								</table>
 						<?php }

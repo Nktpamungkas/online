@@ -9,10 +9,188 @@ $tglDel2 = trim($_GET['tglDel2']);
 $time1 = trim($_GET['time1']);
 $time2 = trim($_GET['time2']);
 
-if($time1 && $time2){
-	$where_time	 = "AND SUBSTR(iptip.MULAI, 12, 5) BETWEEN '$time1' AND '$time2'";
-}else{
-	$where_time	 = "";
+if($_GET['jns_tgl'] == 'KK IN'){
+	if ($time1 && $time2) {
+		$_time1_1		= substr($time1, 0, 2);
+		$_time1_2		= substr($time1, 3, 2);
+		$_time1		= $_time1_1 . '.' . $_time1_2;
+
+		$_time2_1		= substr($time2, 0, 2);
+		$_time2_2		= substr($time2, 3, 2);
+		$_time2		= $_time2_1 . '.' . $_time2_2;
+
+		$where_time	 = "AND SUBSTR(iptip.MULAI, 12, 5) BETWEEN '$_time1' AND '$_time2'";
+	} else {
+		$where_time	 = "";
+	}
+	$operation_query = "SELECT 
+						p.STEPNUMBER,
+						ip.LANGGANAN,
+						TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
+						p2.DESCRIPTION AS LOT,
+						p.PRODUCTIONORDERCODE,
+						p.PRODUCTIONDEMANDCODE,
+						p2.ORIGDLVSALORDLINESALORDERCODE,
+						p2.SUBCODE05 AS NO_WARNA,
+						i.WARNA,
+						iptip.MULAI,
+						CASE
+							WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
+							ELSE TRIM(o.EXTERNALITEMCODE)
+						END || ' / '|| 
+						TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
+						TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
+						TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
+						TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
+						CASE
+							WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
+							ELSE PRODUCT.LONGDESCRIPTION
+						END || ' ' || 
+						CASE
+							WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
+							ELSE TRIM(s.INTERNALREFERENCE)
+						END AS ITEMDESCRIPTION
+					FROM 
+						ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
+					LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
+					LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+					LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+					LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+						AND i.SUBCODE01 = p2.SUBCODE01
+						AND i.SUBCODE02 = p2.SUBCODE02
+						AND i.SUBCODE03 = p2.SUBCODE03
+						AND i.SUBCODE04 = p2.SUBCODE04
+						AND i.SUBCODE05 = p2.SUBCODE05
+						AND i.SUBCODE06 = p2.SUBCODE06
+						AND i.SUBCODE07 = p2.SUBCODE07
+						AND i.SUBCODE08 = p2.SUBCODE08
+						AND i.SUBCODE09 = p2.SUBCODE09
+						AND i.SUBCODE10 = p2.SUBCODE10
+					LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+					LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+					LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+						AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+						AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+						AND o.SUBCODE01 = p2.SUBCODE01
+						AND o.SUBCODE02 = p2.SUBCODE02
+						AND o.SUBCODE03 = p2.SUBCODE03
+						AND o.SUBCODE04 = p2.SUBCODE04
+						AND o.SUBCODE05 = p2.SUBCODE05
+						AND o.SUBCODE06 = p2.SUBCODE06
+						AND o.SUBCODE07 = p2.SUBCODE07
+						AND o.SUBCODE08 = p2.SUBCODE08
+						AND o.SUBCODE09 = p2.SUBCODE09
+						AND o.SUBCODE10 = p2.SUBCODE10
+					LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+						AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+						AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+						AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+						AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+						AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+						AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+						AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+						AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+						AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+						AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+					LEFT JOIN ITXVIEW_PELANGGAN ip ON ip.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE 
+						AND ip.CODE = s.CODE 
+					WHERE
+						o.OPERATIONGROUPCODE = '$dep0' 
+						AND	iptip.PROGRESSSTARTPROCESSDATE BETWEEN '$tglDel' AND '$tglDel2'
+						$where_time
+					ORDER BY 
+						iptip.MULAI ASC";
+}elseif ($_GET['jns_tgl'] == 'KK OUT') {
+	if ($time1 && $time2) {
+		$_time1_1		= substr($time1, 0, 2);
+		$_time1_2		= substr($time1, 3, 2);
+		$_time1		= $_time1_1 . '.' . $_time1_2;
+
+		$_time2_1		= substr($time2, 0, 2);
+		$_time2_2		= substr($time2, 3, 2);
+		$_time2		= $_time2_1 . '.' . $_time2_2;
+
+		$where_time	 = "AND SUBSTR(iptop.SELESAI, 12, 5) BETWEEN '$_time1' AND '$_time2'";
+	} else {
+		$where_time	 = "";
+	}
+	$operation_query = "SELECT 
+							p.STEPNUMBER,
+							ip.LANGGANAN,
+							TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
+							p2.DESCRIPTION AS LOT,
+							p.PRODUCTIONORDERCODE,
+							p.PRODUCTIONDEMANDCODE,
+							p2.ORIGDLVSALORDLINESALORDERCODE,
+							p2.SUBCODE05 AS NO_WARNA,
+							i.WARNA,
+							iptop.SELESAI,
+							CASE
+								WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
+								ELSE TRIM(o.EXTERNALITEMCODE)
+							END || ' / '|| 
+							TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
+							TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
+							TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
+							TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
+							CASE
+								WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
+								ELSE PRODUCT.LONGDESCRIPTION
+							END || ' ' || 
+							CASE
+								WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
+								ELSE TRIM(s.INTERNALREFERENCE)
+							END AS ITEMDESCRIPTION
+						FROM 
+							ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop 
+						LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptop.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptop.DEMANDSTEPSTEPNUMBER
+						LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+						LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+						LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+							AND i.SUBCODE01 = p2.SUBCODE01
+							AND i.SUBCODE02 = p2.SUBCODE02
+							AND i.SUBCODE03 = p2.SUBCODE03
+							AND i.SUBCODE04 = p2.SUBCODE04
+							AND i.SUBCODE05 = p2.SUBCODE05
+							AND i.SUBCODE06 = p2.SUBCODE06
+							AND i.SUBCODE07 = p2.SUBCODE07
+							AND i.SUBCODE08 = p2.SUBCODE08
+							AND i.SUBCODE09 = p2.SUBCODE09
+							AND i.SUBCODE10 = p2.SUBCODE10
+						LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+						LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+						LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+							AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+							AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+							AND o.SUBCODE01 = p2.SUBCODE01
+							AND o.SUBCODE02 = p2.SUBCODE02
+							AND o.SUBCODE03 = p2.SUBCODE03
+							AND o.SUBCODE04 = p2.SUBCODE04
+							AND o.SUBCODE05 = p2.SUBCODE05
+							AND o.SUBCODE06 = p2.SUBCODE06
+							AND o.SUBCODE07 = p2.SUBCODE07
+							AND o.SUBCODE08 = p2.SUBCODE08
+							AND o.SUBCODE09 = p2.SUBCODE09
+							AND o.SUBCODE10 = p2.SUBCODE10
+						LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+							AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+							AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+							AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+							AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+							AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+							AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+							AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+							AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+							AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+							AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+						LEFT JOIN ITXVIEW_PELANGGAN ip ON ip.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE 
+							AND ip.CODE = s.CODE 
+						WHERE
+							o.OPERATIONGROUPCODE = '$dep0' 
+							AND	iptop.SELESAI BETWEEN '$tglDel' AND '$tglDel2'
+							$where_time
+						ORDER BY
+							iptop.SELESAI ASC";
 }
 
 header("content-type:application/vnd-ms-excel");
@@ -300,24 +478,26 @@ header('Cache-Control: max-age=0');
 						</td>
 						<td class="normal333" style="padding: 5px; vertical-align: top;">
 							<?php
-							$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
-							$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
-							$diff = $akhir - $awal;
+								$awal = strtotime(date_format(date_create(trim($row_operation['MULAI'])), "Y/m/d H:i:s"));
+								$akhir = strtotime(date_format(date_create(trim($row_kkout['SELESAI'])), "Y/m/d H:i:s"));
+								$diff = $akhir - $awal;
 
-							$jam = floor($diff / (60 * 60));
-							$menit_ = $diff - ($jam * (60 * 60));
-							$menit = floor($menit_ / 60);
-							$detik = $diff % 60;
+								$jam = floor($diff / (60 * 60));
+								$menit_ = $diff - ($jam * (60 * 60));
+								$menit = floor($menit_ / 60);
+								$detik = $diff % 60;
 
-							$waktu = "";
-							if ($jam > 0)
-								$waktu .= $jam . " jam ";
-							if ($menit > 0)
-								$waktu .= $menit . " menit ";
-							if ($detik > 0)
-								$waktu .= $detik . " detik";
+								$waktu = "";
+								if ($jam > 0)
+									$waktu .= $jam . " jam ";
+								if ($menit > 0)
+									$waktu .= $menit . " menit ";
+								if ($detik > 0)
+									$waktu .= $detik . " detik";
 
-							echo $waktu;
+								if(!empty($row_kkout['SELESAI'])){
+									echo $waktu;
+								}
 							?>
 						</td>
 						<td class="normal333" style="padding: 5px; vertical-align: top;">
@@ -343,7 +523,9 @@ header('Cache-Control: max-age=0');
 																			LIMIT 1");
 
 								$q_bruto_bagikain = db2_fetch_assoc($q_bruto_bagikain);
-								echo $q_bruto_bagikain['INITIALUSERPRIMARYQUANTITY'];
+								if(!empty($q_bruto_bagikain['INITIALUSERPRIMARYQUANTITY'])){
+									echo number_format($q_bruto_bagikain['INITIALUSERPRIMARYQUANTITY'], 3);
+								}
 							?>
 						</td>
 						<td class="normal333" style="padding: 5px; vertical-align: top;">
