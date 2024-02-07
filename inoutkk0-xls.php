@@ -524,7 +524,7 @@ header('Cache-Control: max-age=0');
 							`<?= $row_operation['PRODUCTIONORDERCODE'] ?>
 						</td>
 						<td class="normal333" style="padding: 5px; vertical-align: top;">
-							`<?= $row_operation['PRODUCTIONDEMANDCODE'] ?>
+							<a target="_BLANK" href="http://online.indotaichen.com/laporan/prd_detail_demand_step.php?demand=<?= $row_operation['PRODUCTIONDEMANDCODE']; ?>">`<?= $row_operation['PRODUCTIONDEMANDCODE']; ?></a>
 						</td>
 						<td class="normal333" style="padding: 5px; vertical-align: top;">
 							...
