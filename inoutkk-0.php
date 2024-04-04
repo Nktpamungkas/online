@@ -350,82 +350,82 @@
 									} else {
 										$where_datetime	 = "AND	SUBSTR(iptip.MULAI, 1,10) BETWEEN '$tglDel' AND '$tglDel2'";
 									}
-									$operation_query = "SELECT 
-														p.STEPNUMBER,
-														ip.LANGGANAN,
-														TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
-														p2.DESCRIPTION AS LOT,
-														p.PRODUCTIONORDERCODE,
-														p.PRODUCTIONDEMANDCODE,
-														p2.ORIGDLVSALORDLINESALORDERCODE,
-														p2.SUBCODE05 AS NO_WARNA,
-														i.WARNA,
-														iptip.MULAI,
-														CASE
-															WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
-															ELSE TRIM(o.EXTERNALITEMCODE)
-														END || ' / '|| 
-														TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
-														TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
-														TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
-														TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
-														CASE
-															WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
-															ELSE PRODUCT.LONGDESCRIPTION
-														END || ' ' || 
-														CASE
-															WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
-															ELSE TRIM(s.INTERNALREFERENCE)
-														END AS ITEMDESCRIPTION
-													FROM 
-														ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
-													LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
-													LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
-													LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
-													LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
-														AND i.SUBCODE01 = p2.SUBCODE01
-														AND i.SUBCODE02 = p2.SUBCODE02
-														AND i.SUBCODE03 = p2.SUBCODE03
-														AND i.SUBCODE04 = p2.SUBCODE04
-														AND i.SUBCODE05 = p2.SUBCODE05
-														AND i.SUBCODE06 = p2.SUBCODE06
-														AND i.SUBCODE07 = p2.SUBCODE07
-														AND i.SUBCODE08 = p2.SUBCODE08
-														AND i.SUBCODE09 = p2.SUBCODE09
-														AND i.SUBCODE10 = p2.SUBCODE10
-													LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
-													LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
-													LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
-														AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
-														AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
-														AND o.SUBCODE01 = p2.SUBCODE01
-														AND o.SUBCODE02 = p2.SUBCODE02
-														AND o.SUBCODE03 = p2.SUBCODE03
-														AND o.SUBCODE04 = p2.SUBCODE04
-														AND o.SUBCODE05 = p2.SUBCODE05
-														AND o.SUBCODE06 = p2.SUBCODE06
-														AND o.SUBCODE07 = p2.SUBCODE07
-														AND o.SUBCODE08 = p2.SUBCODE08
-														AND o.SUBCODE09 = p2.SUBCODE09
-														AND o.SUBCODE10 = p2.SUBCODE10
-													LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
-														AND PRODUCT.SUBCODE01 = p2.SUBCODE01
-														AND PRODUCT.SUBCODE02 = p2.SUBCODE02
-														AND PRODUCT.SUBCODE03 = p2.SUBCODE03
-														AND PRODUCT.SUBCODE04 = p2.SUBCODE04
-														AND PRODUCT.SUBCODE05 = p2.SUBCODE05
-														AND PRODUCT.SUBCODE06 = p2.SUBCODE06
-														AND PRODUCT.SUBCODE07 = p2.SUBCODE07
-														AND PRODUCT.SUBCODE08 = p2.SUBCODE08
-														AND PRODUCT.SUBCODE09 = p2.SUBCODE09
-														AND PRODUCT.SUBCODE10 = p2.SUBCODE10
-													LEFT JOIN ITXVIEW_PELANGGAN ip ON ip.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE 
-														AND ip.CODE = s.CODE 
-													WHERE
-														o.OPERATIONGROUPCODE = '$dep0' 
-														$where_datetime
-													ORDER BY 
-														iptip.MULAI ASC";
+									$operation_query = "SELECT DISTINCT
+															p.STEPNUMBER,
+															ip.LANGGANAN,
+															TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
+															p2.DESCRIPTION AS LOT,
+															p.PRODUCTIONORDERCODE,
+															p.PRODUCTIONDEMANDCODE,
+															p2.ORIGDLVSALORDLINESALORDERCODE,
+															p2.SUBCODE05 AS NO_WARNA,
+															i.WARNA,
+															iptip.MULAI,
+															CASE
+																WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
+																ELSE TRIM(o.EXTERNALITEMCODE)
+															END || ' / '|| 
+															TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
+															TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
+															TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
+															TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
+															CASE
+																WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
+																ELSE PRODUCT.LONGDESCRIPTION
+															END || ' ' || 
+															CASE
+																WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
+																ELSE TRIM(s.INTERNALREFERENCE)
+															END AS ITEMDESCRIPTION
+														FROM 
+															ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
+														LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
+														LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+														LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+														LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+															AND i.SUBCODE01 = p2.SUBCODE01
+															AND i.SUBCODE02 = p2.SUBCODE02
+															AND i.SUBCODE03 = p2.SUBCODE03
+															AND i.SUBCODE04 = p2.SUBCODE04
+															AND i.SUBCODE05 = p2.SUBCODE05
+															AND i.SUBCODE06 = p2.SUBCODE06
+															AND i.SUBCODE07 = p2.SUBCODE07
+															AND i.SUBCODE08 = p2.SUBCODE08
+															AND i.SUBCODE09 = p2.SUBCODE09
+															AND i.SUBCODE10 = p2.SUBCODE10
+														LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+														LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+														LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+															AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+															AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+															AND o.SUBCODE01 = p2.SUBCODE01
+															AND o.SUBCODE02 = p2.SUBCODE02
+															AND o.SUBCODE03 = p2.SUBCODE03
+															AND o.SUBCODE04 = p2.SUBCODE04
+															AND o.SUBCODE05 = p2.SUBCODE05
+															AND o.SUBCODE06 = p2.SUBCODE06
+															AND o.SUBCODE07 = p2.SUBCODE07
+															AND o.SUBCODE08 = p2.SUBCODE08
+															AND o.SUBCODE09 = p2.SUBCODE09
+															AND o.SUBCODE10 = p2.SUBCODE10
+														LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+															AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+															AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+															AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+															AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+															AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+															AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+															AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+															AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+															AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+															AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+														LEFT JOIN ITXVIEW_PELANGGAN ip ON ip.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE 
+															AND ip.CODE = s.CODE 
+														WHERE
+															o.OPERATIONGROUPCODE = '$dep0' 
+															$where_datetime
+														ORDER BY 
+															iptip.MULAI ASC";
 								}elseif ($_POST['jenis_tanggal'] == 'KK OUT') {
 									if ($time1 && $time2) {
 										$_time1_1		= substr($time1, 0, 2);
@@ -440,7 +440,7 @@
 									} else {
 										$where_datetime	 = "AND	SUBSTR(iptop.SELESAI, 1,10) BETWEEN '$tglDel' AND '$tglDel2'";
 									}
-									$operation_query = "SELECT 
+									$operation_query = "SELECT DISTINCT
 															p.STEPNUMBER,
 															ip.LANGGANAN,
 															TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
@@ -525,22 +525,162 @@
 										$operation_query_count 	= "SELECT 
 																		COUNT(*) as JUMLAH
 																	FROM 
-																		ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
-																	LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
-																	LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
-																	WHERE
-																		o.OPERATIONGROUPCODE = '$dep0' 
-																		$where_datetime";
+																		(SELECT DISTINCT
+																				p.STEPNUMBER,
+																				ip.LANGGANAN,
+																				TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
+																				p2.DESCRIPTION AS LOT,
+																				p.PRODUCTIONORDERCODE,
+																				p.PRODUCTIONDEMANDCODE,
+																				p2.ORIGDLVSALORDLINESALORDERCODE,
+																				p2.SUBCODE05 AS NO_WARNA,
+																				i.WARNA,
+																				iptip.MULAI,
+																				CASE
+																					WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
+																					ELSE TRIM(o.EXTERNALITEMCODE)
+																				END || ' / '|| 
+																				TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
+																				TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
+																				TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
+																				TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
+																				CASE
+																					WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
+																					ELSE PRODUCT.LONGDESCRIPTION
+																				END || ' ' || 
+																				CASE
+																					WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
+																					ELSE TRIM(s.INTERNALREFERENCE)
+																				END AS ITEMDESCRIPTION
+																			FROM 
+																				ITXVIEW_POSISIKK_TGL_IN_PRODORDER iptip
+																			LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptip.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptip.DEMANDSTEPSTEPNUMBER
+																			LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+																			LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+																			LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+																				AND i.SUBCODE01 = p2.SUBCODE01
+																				AND i.SUBCODE02 = p2.SUBCODE02
+																				AND i.SUBCODE03 = p2.SUBCODE03
+																				AND i.SUBCODE04 = p2.SUBCODE04
+																				AND i.SUBCODE05 = p2.SUBCODE05
+																				AND i.SUBCODE06 = p2.SUBCODE06
+																				AND i.SUBCODE07 = p2.SUBCODE07
+																				AND i.SUBCODE08 = p2.SUBCODE08
+																				AND i.SUBCODE09 = p2.SUBCODE09
+																				AND i.SUBCODE10 = p2.SUBCODE10
+																			LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+																			LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+																			LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+																				AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+																				AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+																				AND o.SUBCODE01 = p2.SUBCODE01
+																				AND o.SUBCODE02 = p2.SUBCODE02
+																				AND o.SUBCODE03 = p2.SUBCODE03
+																				AND o.SUBCODE04 = p2.SUBCODE04
+																				AND o.SUBCODE05 = p2.SUBCODE05
+																				AND o.SUBCODE06 = p2.SUBCODE06
+																				AND o.SUBCODE07 = p2.SUBCODE07
+																				AND o.SUBCODE08 = p2.SUBCODE08
+																				AND o.SUBCODE09 = p2.SUBCODE09
+																				AND o.SUBCODE10 = p2.SUBCODE10
+																			LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+																				AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+																				AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+																				AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+																				AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+																				AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+																				AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+																				AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+																				AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+																				AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+																				AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+																			LEFT JOIN ITXVIEW_PELANGGAN ip ON ip.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE 
+																				AND ip.CODE = s.CODE 
+																			WHERE
+																				o.OPERATIONGROUPCODE = '$dep0' 
+																				$where_datetime
+																			ORDER BY 
+																				iptip.MULAI ASC)";
 									}elseif ($_POST['jenis_tanggal'] == 'KK OUT') {
 										$operation_query_count 	= "SELECT 
 																		COUNT(*) as JUMLAH
 																	FROM 
-																	ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop
-																	LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptop.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptop.DEMANDSTEPSTEPNUMBER
-																	LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
-																	WHERE
-																		o.OPERATIONGROUPCODE = '$dep0' 
-																		$where_datetime";
+																		(SELECT DISTINCT
+																				p.STEPNUMBER,
+																				ip.LANGGANAN,
+																				TRIM(p.OPERATIONCODE) AS OPERATIONCODE,
+																				p2.DESCRIPTION AS LOT,
+																				p.PRODUCTIONORDERCODE,
+																				p.PRODUCTIONDEMANDCODE,
+																				p2.ORIGDLVSALORDLINESALORDERCODE,
+																				p2.SUBCODE05 AS NO_WARNA,
+																				i.WARNA,
+																				iptop.SELESAI,
+																				CASE
+																					WHEN TRIM(o.EXTERNALITEMCODE) IS NULL THEN '-'
+																					ELSE TRIM(o.EXTERNALITEMCODE)
+																				END || ' / '|| 
+																				TRIM(p2.SUBCODE01) || '-' || TRIM(p2.SUBCODE02) || '-' || 
+																				TRIM(p2.SUBCODE03) || '-' || TRIM(p2.SUBCODE04) || '-' ||
+																				TRIM(p2.SUBCODE05) || '-' || TRIM(p2.SUBCODE06) || '-' || 
+																				TRIM(p2.SUBCODE07) || '-' || TRIM(p2.SUBCODE08) AS PRODUCT_NUMBER,
+																				CASE
+																					WHEN PRODUCT.LONGDESCRIPTION IS NULL THEN s2.ITEMDESCRIPTION
+																					ELSE PRODUCT.LONGDESCRIPTION
+																				END || ' ' || 
+																				CASE
+																					WHEN TRIM(s.INTERNALREFERENCE) IS NULL THEN '-'
+																					ELSE TRIM(s.INTERNALREFERENCE)
+																				END AS ITEMDESCRIPTION
+																			FROM 
+																				ITXVIEW_POSISIKK_TGL_OUT_PRODORDER iptop 
+																			LEFT JOIN PRODUCTIONDEMANDSTEP p ON p.PRODUCTIONORDERCODE = iptop.PRODUCTIONORDERCODE AND p.STEPNUMBER = iptop.DEMANDSTEPSTEPNUMBER
+																			LEFT JOIN OPERATION o ON o.CODE = p.OPERATIONCODE
+																			LEFT JOIN PRODUCTIONDEMAND p2 ON p2.CODE = p.PRODUCTIONDEMANDCODE 
+																			LEFT JOIN ITXVIEWCOLOR i ON i.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+																				AND i.SUBCODE01 = p2.SUBCODE01
+																				AND i.SUBCODE02 = p2.SUBCODE02
+																				AND i.SUBCODE03 = p2.SUBCODE03
+																				AND i.SUBCODE04 = p2.SUBCODE04
+																				AND i.SUBCODE05 = p2.SUBCODE05
+																				AND i.SUBCODE06 = p2.SUBCODE06
+																				AND i.SUBCODE07 = p2.SUBCODE07
+																				AND i.SUBCODE08 = p2.SUBCODE08
+																				AND i.SUBCODE09 = p2.SUBCODE09
+																				AND i.SUBCODE10 = p2.SUBCODE10
+																			LEFT JOIN SALESORDER s ON s.CODE = p2.ORIGDLVSALORDLINESALORDERCODE 
+																			LEFT JOIN SALESORDERLINE s2 ON s2.SALESORDERCODE = p2.ORIGDLVSALORDLINESALORDERCODE AND s2.ORDERLINE = p2.ORIGDLVSALORDERLINEORDERLINE
+																			LEFT JOIN ORDERITEMORDERPARTNERLINK o ON o.INACTIVE = 0
+																				AND o.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE
+																				AND o.ITEMTYPEAFICODE = p2.ITEMTYPEAFICODE
+																				AND o.SUBCODE01 = p2.SUBCODE01
+																				AND o.SUBCODE02 = p2.SUBCODE02
+																				AND o.SUBCODE03 = p2.SUBCODE03
+																				AND o.SUBCODE04 = p2.SUBCODE04
+																				AND o.SUBCODE05 = p2.SUBCODE05
+																				AND o.SUBCODE06 = p2.SUBCODE06
+																				AND o.SUBCODE07 = p2.SUBCODE07
+																				AND o.SUBCODE08 = p2.SUBCODE08
+																				AND o.SUBCODE09 = p2.SUBCODE09
+																				AND o.SUBCODE10 = p2.SUBCODE10
+																			LEFT JOIN PRODUCT PRODUCT ON PRODUCT.ITEMTYPECODE = p2.ITEMTYPEAFICODE
+																				AND PRODUCT.SUBCODE01 = p2.SUBCODE01
+																				AND PRODUCT.SUBCODE02 = p2.SUBCODE02
+																				AND PRODUCT.SUBCODE03 = p2.SUBCODE03
+																				AND PRODUCT.SUBCODE04 = p2.SUBCODE04
+																				AND PRODUCT.SUBCODE05 = p2.SUBCODE05
+																				AND PRODUCT.SUBCODE06 = p2.SUBCODE06
+																				AND PRODUCT.SUBCODE07 = p2.SUBCODE07
+																				AND PRODUCT.SUBCODE08 = p2.SUBCODE08
+																				AND PRODUCT.SUBCODE09 = p2.SUBCODE09
+																				AND PRODUCT.SUBCODE10 = p2.SUBCODE10
+																			LEFT JOIN ITXVIEW_PELANGGAN ip ON ip.ORDPRNCUSTOMERSUPPLIERCODE = s.ORDPRNCUSTOMERSUPPLIERCODE 
+																				AND ip.CODE = s.CODE 
+																			WHERE
+																				o.OPERATIONGROUPCODE = '$dep0' 
+																				$where_datetime
+																			ORDER BY
+																				iptop.SELESAI ASC)";
 									}
 									$operation_stmt_count = db2_exec($conn_db2, $operation_query_count);
 									$operation_row_count = db2_fetch_assoc($operation_stmt_count);
